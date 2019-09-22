@@ -69,12 +69,10 @@ const restaurantSchema = new mongoose.Schema({
   description: {
     type: String
   },
-  images: [
-    {
-      imgName: String,
-      imgPath: String
-    }
-  ],
+  images: [{
+    imgName: String,
+    imgPath: String
+  }],
   rating: {
     votes: {
       type: Number,

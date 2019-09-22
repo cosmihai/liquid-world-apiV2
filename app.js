@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000;
 console.log(`App: ${config.get("appName")}\nEnv: ${app.get("env")}`);
 
 //DB connection
-mongoose.connect('mongodb://localhost/LWApi', {useNewUrlParser: true,  useUnifiedTopology: true})
+mongoose.connect('mongodb://localhost/LWApi', {useNewUrlParser: true,  useUnifiedTopology: true, useCreateIndex: true})
 .then(() => console.log('connected to DB ...'));
 
 //middlewares
