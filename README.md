@@ -21,7 +21,7 @@
   - city: _string_
   - country: _string_
   
-- phone: _number_
+- phone: _string_
 
 - description: _string_
 
@@ -32,14 +32,10 @@
 - rating: _object_
 
   - votes: _number_
-  - stars: -number_
+  - stars: _number_
 
 - comments: _[ObjectId, ref: comments]_
 
-- schedule: _object_
-  - open: _string_
-  - close: _string_
-  
 - capacity: _number_
 
 - cuisine: _string_
