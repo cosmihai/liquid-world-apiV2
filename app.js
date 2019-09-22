@@ -2,6 +2,7 @@ require('express-async-errors');
 const error = require('./middlewares/error');
 const morgan = require('morgan');
 const config = require('config');
+const mongoose = require('mongoose');
 const authRoute = require('./routes/auth');
 const bartendersRoute = require('./routes/bartenders');
 const cocktailsRoute = require('./routes/cocktails');
@@ -14,6 +15,10 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 console.log(`App: ${config.get("appName")}\nEnv: ${app.get("env")}`);
+
+//DB connection
+mongoose.connect('mongodb://localhost/LWApi', {useNewUrlParser: true,  useUnifiedTopology: true})
+.then(() => console.log('connected to DB ...'));
 
 //middlewares
 app.use(express.json())
