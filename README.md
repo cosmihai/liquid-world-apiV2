@@ -138,6 +138,8 @@
 
 > __Cocktail__
 
+- id: _string_
+
 - name: _string_
 
 - glass: _string_
@@ -168,13 +170,24 @@
   - username: _string_
   - avatar: _object_
 
-- likes: _number_
+- likes: _object_
 
+  - count: _number_
+  - customerId: _ObjectId_
+  - customerUsername: _string_
+  - likeId: _ObjectId_
+  
   
 
+> __Like__
+
+- id: _string_
+- customerId: _ObjectId_
+- cocktailId: _ObjectId_
 
 
-## Routes
+
+## End points
 
 __api/restaurants__
 
@@ -191,6 +204,10 @@ __api/comments/:id__
 __api/cocktails__
 
 __api/cocktails/:id__
+
+__api/likes__
+
+__api/likes/:id__
 
 
 

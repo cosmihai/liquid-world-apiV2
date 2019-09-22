@@ -8,6 +8,7 @@ const cocktailsRoute = require('./routes/cocktails');
 const commentsRoute = require('./routes/comments');
 const customersRoute = require('./routes/customers');
 const restaurantsRoute = require('./routes/restaurants');
+const likesRoute = require('./routes/likes');
 const express = require('express');
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/cocktails', cocktailsRoute);
 app.use('/api/comments', commentsRoute);
 app.use('/api/customers', customersRoute);
 app.use('/api/restaurants', restaurantsRoute);
+app.use('/api/likes', likesRoute);
 app.use('**', (req, res) => res.status(404).send('Inexistent resorce'));
 app.use(error);
 
