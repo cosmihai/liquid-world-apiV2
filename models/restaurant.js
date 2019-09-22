@@ -85,12 +85,10 @@ const restaurantSchema = new mongoose.Schema({
       default: 0
     }
   },
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment"
-    }
-  ],
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Comment"
+  }],
   capacity: {
     type: Number,
     min: 0,
