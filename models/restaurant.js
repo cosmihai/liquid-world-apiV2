@@ -137,8 +137,18 @@ function validatePassword(pass) {
   return error;
 };
 
+function validateImage(img) {
+  const imgSchema = Joi.object({
+    imgName: Joi.string().required(),
+    imgPath: Joi.string().required()
+  });
+  const { error } = Joi.validate(img, imgSchema);
+  return error;
+}
+
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 module.exports.Restaurant = Restaurant;
 module.exports.validateRestaurant = validateRestaurant;
 module.exports.validateId = validateId;
 module.exports.validatePassword = validatePassword;
+module.exports.validateImage = validateImage;
