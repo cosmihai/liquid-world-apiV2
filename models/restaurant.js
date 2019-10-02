@@ -80,7 +80,11 @@ const restaurantSchema = new mongoose.Schema({
     },
     stars: {
       type: Number,
-      default: 0
+      min: 0,
+      max: 5,
+      default: 0,
+      get: v => Math.round(v*10)/10,
+      set: v => Math.round(v*10)/10
     }
   },
   comments: [{

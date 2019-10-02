@@ -92,6 +92,20 @@ router.delete('/:id/remove-photo/:photo_id', async (req, res) => {
   res.send(restaurant)
 });
 
+router.put('/:id/rate', async (req, res) => {
+  if(!req.body.rate || req.body.rate < 1 || req.body.rate > 5) {
+    return res.status(400).send('Rate must be a number between 1 and 5!');
+  };
+  const restaurant = await Restaurant.findById(req.params.id);
+  let { votes, stars } = restaurant.rating;
+  stars = (stars * votes + req.body.rate)/(votes + 1);
+  votes ++;
+  restaurant.rating.votes = votes;
+  restaurant.rating.stars = stars;
+  restaurant.save();
+  res.send(restaurant);
+});
+
 router.delete('/:id', async (req, res) => {
   //check if id is valid
   if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
