@@ -186,6 +186,15 @@
 ## End points
 
 __api/restaurants__
+- _get_ /
+- _get_ /:id
+- _post_ /
+- _put_ /:id
+- _put_ /:id/change-password
+- _put_ /:id/add-photo
+- _delete_ /:id/remove-photo/:photo_id
+- _put_ /:id/rate
+- _delete_ /:id
 
 __api/restaurants/:id__
 
