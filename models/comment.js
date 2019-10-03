@@ -4,7 +4,8 @@ const Joi = require('joi');
 const commentSchema = new mongoose.Schema({
   text: {
     type: String,
-    required: true
+    required: true,
+    min: 10
   },
   author: {
     type: new mongoose.Schema({
@@ -50,7 +51,7 @@ const commentSchema = new mongoose.Schema({
 
 function validateComment(comment) {
   const schema = Joi.object({
-    text: Joi.string().required(),
+    text: Joi.string().required().min(10),
     customerId: Joi.objectId().required(),
     restaurantId: Joi.objectId().required()
   });

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Comment, validateComment } = require('../models/comment');
-const Customer = require('../models/customer');
+const { Customer } = require('../models/customer');
 const { Restaurant } = require('../models/restaurant');
 
 router.get('/', (req, res) => {
@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
 router.post('/', async (req, res) => {
   const error = validateComment(req.body);
-  // if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0].message);
   const restaurant = await Restaurant.findById(req.body.restaurantId);
   const customer = await Customer.findById(req.body.customerId);
   const comment = new Comment({
@@ -21,11 +21,11 @@ router.post('/', async (req, res) => {
       role: customer.role
     },
     recipient: {
-      _id: restaurant_id,
+      _id: restaurant._id,
       name: restaurant.name,
-      city: restaurant.address.city
+      city: restaurant.address.city,
+      role: restaurant.role
     },
-    role: restaurant.role
   });
   await comment.save()
   res.send(comment)
