@@ -5,15 +5,16 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const restaurants = await Restaurant.find();
+  const restaurants = await Restaurant.find({}, "-password");
   res.send(restaurants);
 });
 
 router.get('/:id', async (req, res) => {
   //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
+  const { valid, message } = validateId(req.params.id);
+  if(!valid) return res.status(400).send(message);
   //search for the restaurant by id
-  const restaurant = await Restaurant.findById(req.params.id, "-password");
+  let restaurant = await Restaurant.findById(req.params.id, "-password").populate('comments');
   if(!restaurant) return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
   res.send(restaurant);
 });
@@ -40,7 +41,8 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
+  const { valid, message } = validateId(req.params.id);
+  if(!valid) return res.status(400).send(message);
   //search for errors in the body of the request
   const error = validateRestaurant(req.body);
   //prevent password to be change
@@ -49,12 +51,13 @@ router.put('/:id', async (req, res) => {
   //update the requested restaurant
   const restaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, {new: true});
   if(!restaurant)return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
-  res.send(restaurant);
+  res.send(_.pick(restaurant, ['_id', 'name', 'email', 'address', 'phone', 'description', 'capacity', 'cuisine']));
 });
 
 router.put('/:id/change-password', async (req, res) => {
   //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
+  const { valid, message } = validateId(req.params.id);
+  if(!valid) return res.status(400).send(message);
   //vaidate password 
   const error = validatePassword(req.body);
   if(error) return res.status(400).send(error.details[0].message);
@@ -67,7 +70,7 @@ router.put('/:id/change-password', async (req, res) => {
   const hash = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, hash);
   await Restaurant.findByIdAndUpdate(req.params.id, {$set: {password: hashPassword}});
-  res.send(`Password changed for "${restaurant.name}" user.`)
+  res.send(`Password changed for "${restaurant.name}" user.`);
 });
 
 router.put('/:id/add-photo', async (req, res) => {
@@ -75,16 +78,18 @@ router.put('/:id/add-photo', async (req, res) => {
   const error = validateImage(req.body);
   if(error) return res.status(400).send(error.details[0].message);
   //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
+  const { valid, message } = validateId(req.params.id);
+  if(!valid) return res.status(400).send(message);
   //check for the restaurant with this id
   const restaurant = await Restaurant.updateOne({_id: req.params.id}, {$push: {images: req.body}});
   if(!restaurant.n) return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
-  res.send(restaurant)
+  res.send(restaurant);
 });
 
 router.delete('/:id/remove-photo/:photo_id', async (req, res) => {
-  //check if restaurant id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
+  //check if restaurant and photo id are valid
+  const { valid, message } = validateId(req.params.id, req.params.photo_id);
+  if(!valid) return res.status(400).send(message);
   //remove image from the array
   const restaurant = await Restaurant.updateOne({_id: req.params.id}, {$pull: {images: {_id: req.params.photo_id}}});
   if(!restaurant.n) return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
@@ -93,22 +98,28 @@ router.delete('/:id/remove-photo/:photo_id', async (req, res) => {
 });
 
 router.put('/:id/rate', async (req, res) => {
+  //check if id is valid
+  const { valid, message } = validateId(req.params.id);
+  if(!valid) return res.status(400).send(message);
+  //check for the rate object in the body of the request
   if(!req.body.rate || req.body.rate < 1 || req.body.rate > 5) {
     return res.status(400).send('Rate must be a number between 1 and 5!');
   };
+  //update rating
   const restaurant = await Restaurant.findById(req.params.id);
   let { votes, stars } = restaurant.rating;
   stars = (stars * votes + req.body.rate)/(votes + 1);
   votes ++;
-  restaurant.rating.votes = votes;
-  restaurant.rating.stars = stars;
+  restaurant.rating = { votes, stars };
   restaurant.save();
-  res.send(restaurant);
+  res.send(_.pick(restaurant, ['_id', 'name', 'rating']));
 });
 
 router.delete('/:id', async (req, res) => {
-  //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`${req.params.id} is not a valid id!`);
+  //check if restaurant id is valid
+  const { valid, message } = validateId(req.params.id);
+  if(!valid) return res.status(400).send(message);
+  //remove restaurant user from DB
   const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
   if(!restaurant) return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
   res.send(`The "${restaurant.name}" user was successfully removed from DB`)

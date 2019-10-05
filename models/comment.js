@@ -59,7 +59,12 @@ function validateComment(comment) {
   return error;
 };
 
+function validateId(id) {
+  return mongoose.Types.ObjectId.isValid(id);
+};
+
 const Comment = mongoose.model('Comment', commentSchema);
 
 module.exports.Comment = Comment;
 module.exports.validateComment = validateComment;
+module.exports.validateId = validateId;

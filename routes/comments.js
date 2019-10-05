@@ -1,18 +1,35 @@
+const Fawn = require('fawn');
+const mongoose = require('mongoose');
+const { Restaurant } = require('../models/restaurant');
+const { Customer } = require('../models/customer');
+const { Comment, validateComment, validateId } = require('../models/comment');
 const express = require('express');
 const router = express.Router();
-const { Comment, validateComment } = require('../models/comment');
-const { Customer } = require('../models/customer');
-const { Restaurant } = require('../models/restaurant');
 
-router.get('/', (req, res) => {
-  res.send('Comments route is under construction');
+Fawn.init(mongoose)
+
+router.get('/', async (req, res) => {
+  const comments = await Comment.find();
+  res.send(comments);
+});
+
+router.get('/:id', async (req, res) => {
+  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+  const comment = await Comment.findById(req.params.id);
+  if(!comment) return res.status(400).send(`No comment with this id ${req.params.id}`);
+  res.send(comment);
 });
 
 router.post('/', async (req, res) => {
+  //validate the body of the request
   const error = validateComment(req.body);
   if(error) return res.status(400).send(error.details[0].message);
+  //check if restaurant or customer with the specified id
   const restaurant = await Restaurant.findById(req.body.restaurantId);
+  if(!restaurant) return res.status(400).send('No restaurant found with this id!');
   const customer = await Customer.findById(req.body.customerId);
+  if(!customer) return res.status(400).send('No customer found with this id!');
+  //create the new comment and save it
   const comment = new Comment({
     text: req.body.text,
     author: {
@@ -27,8 +44,50 @@ router.post('/', async (req, res) => {
       role: restaurant.role
     },
   });
-  await comment.save()
-  res.send(comment)
-})
+  // save the comment and add it to the restaurant list of comments
+  try {
+    new Fawn.Task()
+    .save('comments', comment)
+    .update('restaurants', { _id: restaurant._id }, {
+      $push: { comments: comment._id }
+    })
+    .run()
+    res.send(comment);
+  }
+  catch(ex) {
+    res.status(500).send('Exception: \n' + ex);
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  //validate the body of the request
+  const error = validateComment(req.body);
+  if(error) return res.status(400).send(error.details[0].message);
+  //check if id is valid
+  if(!validateId) return res.status(400).send(`The id ${req.params.id} is not valid`);
+  const comment = await Comment.findByIdAndUpdate(req.params.id, {text: req.body.text}, {new: true});
+  res.send(comment);
+});
+
+router.delete('/:id', async (req, res) => {
+  //check if id is valid
+  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+  const comment = await Comment.findById(req.params.id);
+  //check if there is a comment with this id
+  if(!comment) return res.status(400).send(`No comment with this id ${req.params.id}`);
+  // remove the comment from the DB and from the restaurant's list of comments
+  try {
+    new Fawn.Task()
+    .remove('comments', { _id: comment._id })
+    .update('restaurants', { _id: comment.recipient._id }, {
+      $pull: { comments: comment._id }
+    })
+    .run()
+    res.send(comment);
+  }
+  catch(ex){
+    res.status(500).send('Exception: \n' + ex);
+  }
+});
 
 module.exports = router;

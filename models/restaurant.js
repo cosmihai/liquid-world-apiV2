@@ -129,8 +129,16 @@ function validateRestaurant(restaurant) {
   return error;
 };
 
-function validateId(id) {
-  return mongoose.Types.ObjectId.isValid(id);
+function validateId(...id) {
+  let result = {valid: true, message: ''};
+  for(let i = 0; i < id.length; i ++) {
+    if(!mongoose.Types.ObjectId.isValid(id[i])) {
+      result.valid = false;
+      result.message = `The id ${id[i]} is not valid`;
+      return result
+    }
+  };
+  return result;
 };
 
 function validatePassword(pass) {
