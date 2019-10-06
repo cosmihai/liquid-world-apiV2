@@ -46,7 +46,7 @@ router.put('/:id', async (req, res) => {
   //search for errors in the body of the request
   const error = validateRestaurant(req.body);
   //prevent password to be change
-  if(req.body.password) return res.status(400).send('"Passowrd" is not allowed!')
+  if(req.body.password) return res.status(400).send('"Passowrd" is not allowed!');
   if(error) return res.status(400).send(error.details[0].message);
   //update the requested restaurant
   const restaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, {new: true});

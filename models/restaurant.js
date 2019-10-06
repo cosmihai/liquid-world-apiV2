@@ -70,8 +70,14 @@ const restaurantSchema = new mongoose.Schema({
     type: String
   },
   images: [{
-    imgName: String,
-    imgPath: String
+    imgName: {
+      type: String,
+      required: true
+    },
+    imgPath: {
+      type: String,
+      required: true
+    }
   }],
   rating: {
     votes: {
@@ -156,7 +162,7 @@ function validateImage(img) {
   });
   const { error } = Joi.validate(img, imgSchema);
   return error;
-}
+};
 
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 module.exports.Restaurant = Restaurant;

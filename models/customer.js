@@ -24,17 +24,15 @@ const customerSchema = new mongoose.Schema({
     maxlength: 1024
   },
   avatar: {
-    type: {
-      imgName: {
-        type: String,
-        required: true,
-        default: 'default image'
-      },
-      imgPath: {
-        type: String,
-        required: true,
-        imgPath: 'https://images.unsplash.com/photo-1511914678378-2906b1f69dcf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'
-      },
+    imgName: {
+      type: String,
+      required: true,
+      default: 'default image'
+    },
+    imgPath: {
+      type: String,
+      required: true,
+      default: 'https://images.unsplash.com/photo-1511914678378-2906b1f69dcf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'
     }
   },
   favRestaurants: [{
@@ -85,10 +83,34 @@ function validateCustomer(customer) {
     password: Joi.string().min(6).max(255),
   });
   const { error } = Joi.validate(customer, schema);
-  return error
+  return error;
+};
+
+function validateId(id) {
+  return mongoose.Types.ObjectId.isValid(id);
+};
+
+function validatePassword(pass) {
+  const passSchema = Joi.object({
+    password: Joi.string().min(6).max(255).required()
+  });
+  const { error } = Joi.validate(pass, passSchema);
+  return error;
+};
+
+function validateImage(img) {
+  const imgSchema = Joi.object({
+    imgName: Joi.string().required(),
+    imgPath: Joi.string().required()
+  });
+  const { error } = Joi.validate(img, imgSchema);
+  return error;
 };
 
 const Customer = mongoose.model('Customer', customerSchema);
 
 module.exports.Customer = Customer;
 module.exports.validateCustomer = validateCustomer;
+module.exports.validateId = validateId;
+module.exports.validatePassword = validatePassword;
+module.exports.validateImage = validateImage;
