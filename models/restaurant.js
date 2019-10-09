@@ -1,3 +1,5 @@
+const config = require('config');
+const jwt = require('jsonwebtoken');
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
@@ -113,6 +115,10 @@ const restaurantSchema = new mongoose.Schema({
     default: "restaurant"
   }
 });
+
+restaurantSchema.methods.generateToken = function() {
+  return jwt.sign({_id: this._id, role: this.role}, config.get('jwtKey'));
+}
 
 function validateRestaurant(restaurant) {
   const addressSchema = Joi.object({

@@ -1,3 +1,4 @@
+const auth = require('../middlewares/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const { Restaurant, validateRestaurant, validateId, validatePassword, validateImage } = require('../models/restaurant');
@@ -39,10 +40,13 @@ router.post('/', async (req, res) => {
   res.send(_.pick(restaurant, ['_id', 'name', 'email', 'role']));
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   //check if id is valid
   const { valid, message } = validateId(req.params.id);
   if(!valid) return res.status(400).send(message);
+  console.log(req.user._id + '\n' + req.params.id)
+  //authorize
+  if(!(req.user._id === req.params.id)) return res.status(401).send('Unauthorized');
   //search for errors in the body of the request
   const error = validateRestaurant(req.body);
   //prevent password to be change

@@ -1,5 +1,3 @@
-const config = require('config');
-const jwt = require('jsonwebtoken');
 const { Restaurant } = require('../models/restaurant');
 const Joi = require('joi');
 const bcrypt = require('bcrypt');
@@ -17,7 +15,7 @@ router.post('/restaurants', async (req, res) => {
   const matchPassword = await bcrypt.compare(req.body.password, restaurant.password);
   if(!matchPassword) return res.status(400).send('Password or email incorrect!');
   //generate token and send the response
-  const token = jwt.sign({_id: restaurant._id, role: restaurant.role}, config.get('jwtKey'));
+  const token = restaurant.generateToken();
   res.send(token);
 });
 
