@@ -186,7 +186,7 @@
 ## End points
 
 __api/restaurants__
-- _get_ / -> list all restaurants
+- _get_ / => list all restaurants
 - _get_ /:id
 - _post_ /
 - _put_ /:id
