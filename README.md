@@ -185,18 +185,23 @@
 
 ## End points
 
+__api/auth__
+- _restaurant/login_ => login as a restaurant user
+
 __api/restaurants__
 - _get_ / => list all restaurants
-- _get_ /:id
-- _post_ /
-- _put_ /:id
-- _put_ /:id/change-password
-- _put_ /:id/add-photo
-- _delete_ /:id/remove-photo/:photo_id
-- _put_ /:id/rate
-- _delete_ /:id
+- _get_ /:id => list one restaurant
+- _post_ / => create one restaurant user
+- _put_ /:id => edit one restaurant user
+- _put_ /:id/change-password => edit password
+- _put_ /:id/add-photo => add photo to the restaurant gallery
+- _delete_ /:id/remove-photo/:photo_id => remove photo from the gallery
+- _put_ /:id/rate => rate the restaurant 
+- _delete_ /:id => delete restaurant user
 
 __api/bartenders__
+
+__api/customers__
 
 __api/comments__
 
