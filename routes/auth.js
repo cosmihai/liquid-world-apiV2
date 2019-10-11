@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const express = require('express');
 const router = express.Router();
 
-router.post('/restaurants', async (req, res) => {
+router.post('/restaurants/login', async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
   if(error) return res.status(400).send(error.details[0].message) ;

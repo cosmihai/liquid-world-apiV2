@@ -186,7 +186,7 @@
 ## End points
 
 __api/restaurants__
-- _get_ /
+- _get_ / -> list all restaurants
 - _get_ /:id
 - _post_ /
 - _put_ /:id
@@ -196,23 +196,14 @@ __api/restaurants__
 - _put_ /:id/rate
 - _delete_ /:id
 
-__api/restaurants/:id__
-
 __api/bartenders__
-
-__api/bartenders/:id__
 
 __api/comments__
 
-__api/comments/:id__
-
 __api/cocktails__
-
-__api/cocktails/:id__
 
 __api/likes__
 
-__api/likes/:id__
 
 
 

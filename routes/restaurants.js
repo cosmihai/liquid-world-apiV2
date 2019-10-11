@@ -44,7 +44,6 @@ router.put('/:id', auth, async (req, res) => {
   //check if id is valid
   const { valid, message } = validateId(req.params.id);
   if(!valid) return res.status(400).send(message);
-  console.log(req.user._id + '\n' + req.params.id)
   //authorize
   if(!(req.user._id === req.params.id)) return res.status(401).send('Unauthorized');
   //search for errors in the body of the request
@@ -58,10 +57,12 @@ router.put('/:id', auth, async (req, res) => {
   res.send(_.pick(restaurant, ['_id', 'name', 'email', 'address', 'phone', 'description', 'capacity', 'cuisine']));
 });
 
-router.put('/:id/change-password', async (req, res) => {
+router.put('/:id/change-password', auth, async (req, res) => {
   //check if id is valid
   const { valid, message } = validateId(req.params.id);
   if(!valid) return res.status(400).send(message);
+  //authorize
+  if(!(req.user._id === req.params.id)) return res.status(401).send('Unauthorized');
   //vaidate password 
   const error = validatePassword(req.body);
   if(error) return res.status(400).send(error.details[0].message);
@@ -77,7 +78,9 @@ router.put('/:id/change-password', async (req, res) => {
   res.send(`Password changed for "${restaurant.name}" user.`);
 });
 
-router.put('/:id/add-photo', async (req, res) => {
+router.put('/:id/add-photo', auth, async (req, res) => {
+  //authorize
+  if(!(req.user._id === req.params.id)) return res.status(401).send('Unauthorized');
   //check the image object
   const error = validateImage(req.body);
   if(error) return res.status(400).send(error.details[0].message);
@@ -90,7 +93,9 @@ router.put('/:id/add-photo', async (req, res) => {
   res.send(restaurant);
 });
 
-router.delete('/:id/remove-photo/:photo_id', async (req, res) => {
+router.delete('/:id/remove-photo/:photo_id', auth, async (req, res) => {
+  //authorize
+  if(!(req.user._id === req.params.id)) return res.status(401).send('Unauthorized');
   //check if restaurant and photo id are valid
   const { valid, message } = validateId(req.params.id, req.params.photo_id);
   if(!valid) return res.status(400).send(message);
@@ -101,7 +106,9 @@ router.delete('/:id/remove-photo/:photo_id', async (req, res) => {
   res.send(restaurant)
 });
 
-router.put('/:id/rate', async (req, res) => {
+router.put('/:id/rate', auth, async (req, res) => {
+  //authorize
+  if(req.user.role === 'restaurant') return res.status(401).send('Unauthorized');
   //check if id is valid
   const { valid, message } = validateId(req.params.id);
   if(!valid) return res.status(400).send(message);
@@ -119,10 +126,12 @@ router.put('/:id/rate', async (req, res) => {
   res.send(_.pick(restaurant, ['_id', 'name', 'rating']));
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   //check if restaurant id is valid
   const { valid, message } = validateId(req.params.id);
   if(!valid) return res.status(400).send(message);
+  //authorize
+  if(!(req.user._id === req.params.id)) return res.status(401).send('Unauthorized');
   //remove restaurant user from DB
   const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
   if(!restaurant) return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
