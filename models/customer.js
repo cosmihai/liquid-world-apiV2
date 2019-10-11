@@ -1,3 +1,5 @@
+const config = require('config');
+const jwt = require('jsonwebtoken');
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
@@ -75,6 +77,10 @@ const customerSchema = new mongoose.Schema({
     default: 'customer'
   }
 });
+
+customerSchema.methods.generateToken = function() {
+  return jwt.sign({_id: this._id, role: this.role}, config.get('jwtKey'));
+}
 
 function validateCustomer(customer) {
   const schema = Joi.object({
