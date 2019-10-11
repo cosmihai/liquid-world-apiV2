@@ -191,13 +191,13 @@ __api/auth__
 __api/restaurants__
 - _get_ / => list all restaurants
 - _get_ /:id => list one restaurant
-- _post_ / => create one restaurant user
-- _put_ /:id => edit one restaurant user
-- _put_ /:id/change-password => edit password
-- _put_ /:id/add-photo => add photo to the restaurant gallery
-- _delete_ /:id/remove-photo/:photo_id => remove photo from the gallery
 - _put_ /:id/rate => rate the restaurant 
-- _delete_ /:id => delete restaurant user
+- _post_ / => create one restaurant user
+- _put_ /me => edit restaurant's profile
+- _put_ /me/change-password => edit password
+- _put_ /me/add-photo => add photo to the restaurant gallery
+- _delete_ /me/remove-photo/:photo_id => remove photo from the gallery
+- _delete_ /me => delete restaurant user
 
 __api/bartenders__
 
