@@ -1,15 +1,18 @@
 const auth = require('../middlewares/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+const { Restaurant } = require('../models/restaurant');
 const { Customer, validateCustomer, validateId, validatePassword, validateImage } = require('../models/customer');
 const express = require('express');
 const router = express.Router();
 
+//get all customers
 router.get('/' ,async (req, res) => {
   const customers = await Customer.find({}, "-password");
   res.send(customers);
 });
 
+//get current customer
 router.get('/me', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -19,6 +22,7 @@ router.get('/me', auth, async (req, res) => {
   res.send(me);
 });
 
+//create customer
 router.post('/', async (req, res) => {
   //search for errors in the body of the request
   const error = validateCustomer(req.body);
@@ -39,6 +43,7 @@ router.post('/', async (req, res) => {
   res.send(_.pick(customer, ['_id', 'username', 'email', 'role']));  
 });
 
+//update customer
 router.put('/me', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -53,6 +58,7 @@ router.put('/me', auth, async (req, res) => {
   res.send(_.pick(me, ['_id', 'username', 'email']));
 });
 
+//update password
 router.put('/me/change-password', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -71,6 +77,7 @@ router.put('/me/change-password', auth, async (req, res) => {
   res.send(`Password changed for "${me.username}" user.`);
 });
 
+//set the avatar
 router.put('/me/set-avatar', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;  
@@ -82,4 +89,56 @@ router.put('/me/set-avatar', auth, async (req, res) => {
   if(!me.n) return res.status(400).send(`Invalid token provided`);
   res.send(me);
 });
+
+//add restaurant to favorite list
+router.put('/me/add-fav_restaurants/:restaurantId', auth, async (req, res) => {
+  //set the 'me' user
+  const me = await Customer.findById(req.user._id);
+  if(!me) return res.status(400).send(`Invalid token provided`);
+  //validate restaurant id
+  if(!validateId(req.params.restaurantId)) return res.status(400).send('Invalid restaurant id');
+  //get the restaurant with the provided id
+  const restaurant = await Restaurant.findById(req.params.restaurantId);
+  if(!restaurant) return res.status(400).send(`No restaurant with this id: ${req.params.restaurantId }`);
+  //check if already is in favorite
+  const exist = me.favRestaurants.find(rest => rest._id == req.params.restaurantId);
+  if(exist) return res.status(400).send('This restaurant already exist in the list');
+  //set favorite restaurant
+  const favRestaurant = {
+    _id: req.params.restaurantId,
+    name: restaurant.name,
+    city: restaurant.address.city
+  };
+  //add to the favorite restaurant list
+  me.favRestaurants.push(favRestaurant);
+  await me.save();
+  res.send(favRestaurant);
+});
+
+//remove restaurant from the favorite list
+router.delete('/me/remove-fav_restaurants/:restaurantId', auth, async (req, res) => {
+  //set the 'me' user
+  const me = await Customer.findById(req.user._id);
+  if(!me) return res.status(400).send(`Invalid token provided`);
+  //validate restaurant id
+  if(!validateId(req.params.restaurantId)) return res.status(400).send('Invalid restaurant id');
+  //get the restaurant from the favorite list
+  const exist = me.favRestaurants.find(rest => rest._id == req.params.restaurantId);
+  if(!exist) return res.status(400).send('This restaurant is not in the list');
+  //remove from the favorite restaurant list
+  me.favRestaurants = me.favRestaurants.filter(restaurant => restaurant._id != req.params.restaurantId);
+  await me.save();
+  res.send({removed: exist});
+});
+
+//here i have to put the add-favorite_bartender
+
+//delete restaurant account
+router.delete('/me', auth, async (req, res) => {
+  //get the 'me' id
+  const id = req.user._id;
+  //remove customer user from DB
+  const me = await Customer.findByIdAndDelete(id);
+  res.send(`"${me.username}" user was successfully removed from DB`)
+})
 module.exports = router;
