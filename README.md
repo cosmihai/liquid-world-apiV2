@@ -105,7 +105,9 @@
   - cocktailId: _ObjectId_
   - name: _string_
   - category: _string_
-  - likes
+  - image: _object_
+    - imgName: _string_
+    - imgPath: _string_
 
 - raiting: _number_
 
