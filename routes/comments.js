@@ -1,3 +1,4 @@
+const auth = require('../middlewares/auth');
 const Fawn = require('fawn');
 const mongoose = require('mongoose');
 const { Restaurant } = require('../models/restaurant');
@@ -20,7 +21,9 @@ router.get('/:id', async (req, res) => {
   res.send(comment);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
+  //set the customer id
+  req.body.customerId = req.user._id
   //validate the body of the request
   const error = validateComment(req.body);
   if(error) return res.status(400).send(error.details[0].message);
@@ -59,22 +62,34 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
+  //check if id is valid
+  if(!validateId) return res.status(400).send(`The id ${req.params.id} is not valid`);
+  //get the comment
+  let comment = await Comment.findById(req.params.id);
+  if(!comment) return res.status(400).send('No comment with this id');
+  //check the owner and authorize the change
+  if(req.user._id != comment.author._id) res.status(401).send('Unauthorized');
+  //set the customer and restaurant id
+  req.body.customerId = comment.author._id.toString();
+  req.body.restaurantId = comment.recipient._id.toString();
   //validate the body of the request
   const error = validateComment(req.body);
   if(error) return res.status(400).send(error.details[0].message);
-  //check if id is valid
-  if(!validateId) return res.status(400).send(`The id ${req.params.id} is not valid`);
-  const comment = await Comment.findByIdAndUpdate(req.params.id, {text: req.body.text}, {new: true});
+  //update the comment
+  comment.text = req.body.text;
+  await comment.save();
   res.send(comment);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   //check if id is valid
   if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+  //get the comment
   const comment = await Comment.findById(req.params.id);
-  //check if there is a comment with this id
   if(!comment) return res.status(400).send(`No comment with this id ${req.params.id}`);
+  //check the owner and authorize the remove
+  if(req.user._id != comment.author._id) return res.status(401).send('Unauthorized')
   // remove the comment from the DB and from the restaurant's list of comments
   try {
     new Fawn.Task()

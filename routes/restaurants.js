@@ -65,12 +65,12 @@ router.put('/me', auth, async (req, res) => {
   const id = req.user._id;
   //search for errors in the body of the request
   const error = validateRestaurant(req.body);
+  if(error) return res.status(400).send(error.details[0].message);
   //prevent password to be change
   if(req.body.password) return res.status(400).send('"Passowrd" is not allowed!');
-  if(error) return res.status(400).send(error.details[0].message);
-  //update the requested restaurant
+  //update the profile
   const me = await Restaurant.findByIdAndUpdate(id, req.body, {new: true});
-  if(!me)return res.status(400).send(`Invalid token provided`);
+  if(!me) return res.status(400).send(`Invalid token provided`);
   res.send(_.pick(me, ['_id', 'name', 'email', 'address', 'phone', 'description', 'capacity', 'cuisine']));
 });
 
