@@ -70,12 +70,15 @@ const bartenderSchema = new mongoose.Schema({
       minlength: 2,
       maxlength: 255,
       trim: true,
+      required: true
     },
     from: {
       type: Date,
+      required: true
     },
     until: {
       type: Date,
+      required: true
     },
     position:{
       type: String,
@@ -83,6 +86,7 @@ const bartenderSchema = new mongoose.Schema({
       minlength: 2,
       maxlength: 255,
       trim: true,
+      required: true
     }
   }],
   personalCocktails: [{
@@ -131,7 +135,6 @@ bartenderSchema.methods.generateToken = function() {
 };
 
 function validateBartender(bartender) {
-
   const personalInfoSchema = Joi.object({
     firstName: Joi.string().min(2).max(255).trim().required(),
     lastName: Joi.string().min(2).max(255).trim().required(),

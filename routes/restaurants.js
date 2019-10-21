@@ -98,7 +98,7 @@ router.put('/me/add-photo', auth, async (req, res) => {
   //check the image object
   const error = validateImage(req.body);
   if(error) return res.status(400).send(error.details[0].message);
-  //check for the restaurant with this id
+  //check for the restaurant with this id and push the new image
   const me = await Restaurant.updateOne({_id: id}, {$push: {images: req.body}});
   if(!me.n) return res.status(400).send(`Invalid token provided`);
   res.send(me);

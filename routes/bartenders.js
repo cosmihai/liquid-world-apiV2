@@ -97,6 +97,40 @@ router.put('/me/set-avatar', auth, async (req, res) => {
   if(!me.n) return res.status(400).send(`Invalid token provided`);
   res.send(me);
 });
-//delete bartender user
 
+//add experience
+router.put('/me/add-experience', auth, async (req, res) => {
+  //set the 'me' user
+  const id = req.user._id;
+  //check the experience object
+  const error = validateExpirience(req.body);
+  if(error) return res.status(400).send(error.details[0].message);
+  //check for the bartender with this id and push the experience object
+  const me = await Bartender.updateOne({_id: id}, {$push: {experience: req.body}});
+  if(!me.n) return res.status(400).send(`Invalid token proviedd`);
+  res.send(me);
+});
+
+//remove experience
+router.delete('/me/remove-experience/:experience_id', auth, async (req, res) => {
+  console.log('*******', req.params.experience_id)
+  //set the 'me' user
+  const id = req.user._id;
+  //check if the experience id is valid
+  if(!validateId(req.params.experience_id)) return res.status(400).send(`Invalid experience id provided`);
+  //remove the experience
+  const me = await Bartender.updateOne({_id: id}, {$pull: {experience: { _id: req.params.experience_id }}});
+  if(!me.n) return res.status(400).send(`Invalid token proviedd`);
+  if(!me.nModified) return res.status(400).send(`No experience with this id`)
+  res.send(me);
+});
+
+//delete bartender user
+router.delete('/me', auth, async (req, res) => {
+  //get the 'me' user
+  const id = req.user._id;
+  //remove bartender from DB
+  const me = await Bartender.findByIdAndDelete(id);
+  res.send(`${me.username} user was successfully removed from the DB`);
+});
 module.exports = router;

@@ -140,5 +140,5 @@ router.delete('/me', auth, async (req, res) => {
   //remove customer user from DB
   const me = await Customer.findByIdAndDelete(id);
   res.send(`"${me.username}" user was successfully removed from DB`)
-})
+});
 module.exports = router;
