@@ -5,11 +5,21 @@ const { Restaurant, validateRestaurant, validateId, validatePassword, validateIm
 const express = require('express');
 const router = express.Router();
 
+//get all restaurants
 router.get('/', async (req, res) => {
   const restaurants = await Restaurant.find({}, "-password");
   res.send(restaurants);
 });
 
+//get the restaurant profile
+router.get('/me', auth, async (req, res) => {
+  //get the 'me' user
+  const me = await Restaurant.findById(req.user._id, "-password");
+  if(!me) return res.status(400).send(`Invalid token provided`);
+  res.send(me);
+});
+
+//get one restaurant profile
 router.get('/:id', async (req, res) => {
   //check if id is valid
   const { valid, message } = validateId(req.params.id);
@@ -20,6 +30,7 @@ router.get('/:id', async (req, res) => {
   res.send(restaurant);
 });
 
+//rate one restaurant
 router.put('/:id/rate', auth, async (req, res) => {
   //authorize
   if(req.user.role === 'restaurant') return res.status(401).send('Unauthorized');
@@ -40,6 +51,7 @@ router.put('/:id/rate', auth, async (req, res) => {
   res.send(_.pick(restaurant, ['_id', 'name', 'rating']));
 });
 
+//create a restaurant profile
 router.post('/', async (req, res) => {
   //check if password exist in the body of the request
   if(!req.body.password) res.status(400).send('"Password" is required!');
@@ -60,6 +72,7 @@ router.post('/', async (req, res) => {
   res.send(_.pick(restaurant, ['_id', 'name', 'email', 'role']));
 });
 
+//edit the restaurant profile
 router.put('/me', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -74,6 +87,7 @@ router.put('/me', auth, async (req, res) => {
   res.send(_.pick(me, ['_id', 'name', 'email', 'address', 'phone', 'description', 'capacity', 'cuisine']));
 });
 
+//change the restaurant password
 router.put('/me/change-password', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -92,6 +106,7 @@ router.put('/me/change-password', auth, async (req, res) => {
   res.send(`Password changed for "${me.name}" user.`);
 });
 
+//add one photo to the restaurant gallery
 router.put('/me/add-photo', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -104,6 +119,7 @@ router.put('/me/add-photo', auth, async (req, res) => {
   res.send(me);
 });
 
+//remove one photo from the restaurant gallery
 router.delete('/me/remove-photo/:photo_id', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
@@ -117,6 +133,7 @@ router.delete('/me/remove-photo/:photo_id', auth, async (req, res) => {
   res.send(me)
 });
 
+//remove the restaurant profile
 router.delete('/me', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;

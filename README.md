@@ -189,21 +189,46 @@
 
 __api/auth__
 - _restaurant/login_ => login as a restaurant user
+- _customer/login_ => login as a customer user
+- _bartender/login_ => login as a bartender user
 
 __api/restaurants__
 - _get_ / => list all restaurants
-- _get_ /:id => list one restaurant
+- _get_ /me => list my restaurant profile
+- _get_ /:id => list one restaurant profile
 - _put_ /:id/rate => rate the restaurant 
 - _post_ / => create one restaurant user
-- _put_ /me => edit restaurant's profile
+- _put_ /me => edit my restaurant profile
 - _put_ /me/change-password => edit password
 - _put_ /me/add-photo => add photo to the restaurant gallery
 - _delete_ /me/remove-photo/:photo_id => remove photo from the gallery
 - _delete_ /me => delete restaurant user
 
 __api/bartenders__
+- _get_ / => list all bartenders
+- _get_ /me => list my bartender profile
+- _get_ /:id => list one bartender profile
+- _post_ / => create one bartender user
+- _put_ /me => edit my bartender profile
+- _put_ /me/change-password => edit password
+- _put_ /me/set-avatar => set/edit avatar
+- _put_ /me/add-experience => add experience to the profile
+- _delete_ /me/remove-experience/:experienceId => remove experience from the profile
+- _delete_ /me/ => remove bartender profile
 
 __api/customers__
+- _get_ / => list all customers
+- _get_ /me => list my customer profile
+- _get_ /:id => list one customer profile
+- _post_ / => create one customer user
+- _put_ /:me => edit my customer profile
+- _put_ /me/change-password => edit password
+- _put_ /me/set-avatar => set/edit avatar
+- _put_ /me/add-fav_restaurants/:restaurantId => add a restaurant to favorites
+- _delete_ /me/remove-fav_restaurants/:restaurantId => remove a restaurant from favorites
+- _put_ /me/add-fav_bartenders/:bartenderId => add a bartender to favorites
+- _delete_ /me/remove-fav_bartenders/:bartenderId => remove a bartender from favorites
+- _delete_ /me/ => remove customer profile
 
 __api/comments__
 

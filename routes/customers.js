@@ -22,6 +22,16 @@ router.get('/me', auth, async (req, res) => {
   res.send(me);
 });
 
+//get one customer
+router.get('/:id', async (req, res) => {
+  //check if id is valid
+  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+  //get the customer
+  const customer = await Customer.findById(req.params.id, "-password");
+  if(!customer) return res.status(400).send(`No customer with this id ${req.params.id}`);
+  res.send(customer);  
+});
+
 //create customer
 router.post('/', async (req, res) => {
   //search for errors in the body of the request
@@ -131,7 +141,9 @@ router.delete('/me/remove-fav_restaurants/:restaurantId', auth, async (req, res)
   res.send({removed: exist});
 });
 
-//here i have to put the add-favorite_bartender
+// add bartender to favorites
+
+// remove bartender from favorites
 
 //delete restaurant account
 router.delete('/me', auth, async (req, res) => {
