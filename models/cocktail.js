@@ -114,6 +114,10 @@ const cocktailSchema = new mongoose.Schema({
   },
   likes: [{
     type: new mongoose.Schema({
+      customerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
       username: {
         type: String,
         required: true,

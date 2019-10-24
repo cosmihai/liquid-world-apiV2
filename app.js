@@ -1,4 +1,5 @@
 require('express-async-errors');
+const Fawn = require('fawn');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const error = require('./middlewares/error');
@@ -14,6 +15,7 @@ const restaurantsRoute = require('./routes/restaurants');
 const likesRoute = require('./routes/likes');
 const express = require('express');
 const app = express();
+Fawn.init(mongoose);
 
 const port = process.env.PORT || 3000;
 console.log(`App: ${config.get("appName")}\nEnv: ${app.get("env")}`);

@@ -16,10 +16,10 @@ const Like = mongoose.model('Like', likeSchema);
 
 function validateLike(like) {
   const schema = Joi.object({
-    cocktailId: Joi.ObjectId().required()
+    cocktailId: Joi.objectId().required()
   });
   const { error } = Joi.validate(like, schema);
   return error;
 };
 
-module.exports = { Like, validateLike, validateId };
+module.exports = { Like, validateLike };
