@@ -1,6 +1,7 @@
 const auth = require('../middlewares/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+const { Bartender } = require('../models/bartender');
 const { Restaurant } = require('../models/restaurant');
 const { Customer, validateCustomer, validateId, validatePassword, validateImage } = require('../models/customer');
 const express = require('express');
@@ -142,8 +143,45 @@ router.delete('/me/remove-fav_restaurants/:restaurantId', auth, async (req, res)
 });
 
 // add bartender to favorites
+router.put('/me/add-fav_bartender/:bartenderId', auth, async (req, res) => {
+  //set the 'me' user
+  const me = await Customer.findById(req.user._id);
+  if(!me) return res.status(400).send(`Invalid token provided`);
+  //validate bartender id
+  if(!validateId(req.params.bartenderId)) return res.status(400).send(`Invalid bartender id`);
+  //get the bartender with the provided id
+  const bartender = await Bartender.findById(req.params.bartenderId);
+  if(!bartender) return res.status(400).send(`No bartender with this id: ${req.params.bartenderId}`);
+  //check if already is in favorites
+  const exist = me.favBartenders.find(bartender => bartender._id == req.params.bartenderId);
+  if(exist) return res.status(400).send(`This bartender already exist in the list`);
+  //set favorite bartender
+  const favBartender = {
+    _id: req.params.bartenderId,
+    username: bartender.username,
+    raiting: bartender.raiting 
+  };
+  //add to the favorites bartender list
+  me.favBartenders.push(favBartender);
+  await me.save();
+  res.send(favBartender);
+});
 
 // remove bartender from favorites
+router.delete('/me/remove-fav_bartender/:bartenderId', auth, async (req, res) => {
+  //set the 'me' user
+  const me = await Customer.findById(req.user._id);
+  if(!me) return res.status(400).send(`Invalid token provided`);
+  //validate bartender id
+  if(!validateId(req.params.bartenderId)) return res.status(400).send(`Invalid bartender id`);
+  //get the bartender from the favorite list
+  const exist = me.favBartenders.find(rest => rest._id == req.params.bartenderId);
+  if(!exist) return res.status(400).send('This bartender is not in the list');
+  //remove from the favorite bartender list
+  me.favBartenders = me.favBartenders.filter(bartender => bartender._id != req.params.bartenderId);
+  await me.save();
+  res.send({removed: exist});
+});
 
 //delete restaurant account
 router.delete('/me', auth, async (req, res) => {
