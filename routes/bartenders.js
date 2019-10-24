@@ -112,14 +112,13 @@ router.put('/me/add-experience', auth, async (req, res) => {
 });
 
 //remove experience
-router.delete('/me/remove-experience/:experience_id', auth, async (req, res) => {
-  console.log('*******', req.params.experience_id)
+router.delete('/me/remove-experience/:experienceId', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
   //check if the experience id is valid
-  if(!validateId(req.params.experience_id)) return res.status(400).send(`Invalid experience id provided`);
+  if(!validateId(req.params.experienceId)) return res.status(400).send(`Invalid experience id provided`);
   //remove the experience
-  const me = await Bartender.updateOne({_id: id}, {$pull: {experience: { _id: req.params.experience_id }}});
+  const me = await Bartender.updateOne({_id: id}, {$pull: {experience: { _id: req.params.experienceId }}});
   if(!me.n) return res.status(400).send(`Invalid token proviedd`);
   if(!me.nModified) return res.status(400).send(`No experience with this id`)
   res.send(me);

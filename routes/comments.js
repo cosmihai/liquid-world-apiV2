@@ -7,7 +7,7 @@ const { Comment, validateComment, validateId } = require('../models/comment');
 const express = require('express');
 const router = express.Router();
 
-Fawn.init(mongoose)
+Fawn.init(mongoose);
 
 router.get('/', async (req, res) => {
   const comments = await Comment.find();
