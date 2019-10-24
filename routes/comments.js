@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', auth, async (req, res) => {
-  //check if the user has customer role
+  //check authorization
   if(req.user.role != 'customer') return res.status(401).send(`Only customers can add comments`);
   //set the customer id
   req.body.customerId = req.user._id
