@@ -140,6 +140,9 @@ const cocktailSchema = new mongoose.Schema({
   }]
 });
 
+cocktailSchema.virtual('likesCounter').get(function() {
+  return this.likes.length
+});
 const Cocktail = mongoose.model('Cocktail', cocktailSchema);
 
 function validateCocktail(cocktail) {

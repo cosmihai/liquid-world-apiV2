@@ -1,13 +1,10 @@
 const auth = require('../middlewares/auth');
 const Fawn = require('fawn');
-const mongoose = require('mongoose');
 const { Restaurant } = require('../models/restaurant');
 const { Customer } = require('../models/customer');
 const { Comment, validateComment, validateId } = require('../models/comment');
 const express = require('express');
 const router = express.Router();
-
-// Fawn.init(mongoose);
 
 router.get('/', async (req, res) => {
   const comments = await Comment.find();

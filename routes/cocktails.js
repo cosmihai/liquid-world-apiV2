@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
   //get the cocktail 
   const cocktail = await Cocktail.findById(req.params.id);
   if(!cocktail) return res.status(400).send(`No cocktail with this id: ${req.params.id}`);
-  res.send(cocktail);
+  res.send({currentCocktail: cocktail, likes: cocktail.likesCounter});
 });
 
 //create one cocktail
@@ -37,7 +37,7 @@ router.post('/', auth, async (req, res) => {
     avatar: owner.avatar
   };
   await cocktail.save();
-  res.send(cocktail)
+  res.send(cocktail);
 });
 
 module.exports = router;

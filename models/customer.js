@@ -72,6 +72,10 @@ const customerSchema = new mongoose.Schema({
       }
     })
   }],
+  favCocktails: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cocktail'
+  }],
   role: {
     type: String,
     default: 'customer'
