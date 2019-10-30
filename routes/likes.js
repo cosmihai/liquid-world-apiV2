@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   res.send(likes);
 });
 
-//like a cocktail
+//give like to a cocktail
 router.post('/', auth, async (req, res) => {
   //authorize
   if(req.user.role != 'customer') return res.status(401).send(`Only customers can give like to a cocktail`);
@@ -69,7 +69,7 @@ router.delete('/remove', auth, async (req, res) => {
   if(!cocktail) return res.status(400).send(`No cocktail with this id`);
   //search for this cocktail in favorites list
   if(customer.favCocktails.indexOf(cocktail._id) < 0) return res.status(400).send(`This cocktail is not in your favorite list`);
-  const like = await Like.find({ $and: [{customerId: customer._id}, {cocktailId: cocktail._id}]});
+  const like = await Like.findOne({ $and: [{customerId: customer._id}, {cocktailId: cocktail._id}]});
   console.log(like)
   // delete the like and remove it from the cocktail list of likes
   try {
