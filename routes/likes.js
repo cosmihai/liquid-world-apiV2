@@ -55,7 +55,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //remove the like
-router.delete('/remove', auth, async (req, res) => {
+router.delete('/', auth, async (req, res) => {
   //authorize
   if(req.user.role != 'customer') return res.status(401).send(`Only customers can access this resource`);
   //set the customer

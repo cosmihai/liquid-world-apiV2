@@ -8,6 +8,7 @@ const cocktailSchema = new mongoose.Schema({
     required: true,
     min: 2,
     max: 255,
+    unique: true,
     trim: true
   },
   glass: {
@@ -167,6 +168,15 @@ function validateCocktail(cocktail) {
   return error
 };
 
+function validateImage(img) {
+  const imgSchema = Joi.object({
+    imgName: Joi.string().required(),
+    imgPath: Joi.string().required()
+  });
+  const { error } = Joi.validate(img, imgSchema);
+  return error;
+};
+
 function validateId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 };
@@ -174,3 +184,4 @@ function validateId(id) {
 module.exports.Cocktail = Cocktail;
 module.exports.validateCocktail = validateCocktail;
 module.exports.validateId = validateId;
+module.exports.validateImage = validateImage;
