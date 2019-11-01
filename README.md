@@ -187,9 +187,9 @@
 ## End points
 
 __api/auth__
-- _post_ restaurants/login => login as a restaurant user
-- _post_ customers/login => login as a customer user
-- _post_ bartenders/login => login as a bartender user
+- _post_ /restaurants/login => login as a restaurant user
+- _post_ /customers/login => login as a customer user
+- _post_ /bartenders/login => login as a bartender user
 
 __api/restaurants__
 - _get_ / => list all restaurants
