@@ -6,11 +6,14 @@ const { Comment, validateComment, validateId } = require('../models/comment');
 const express = require('express');
 const router = express.Router();
 
+
+//list all comments
 router.get('/', async (req, res) => {
   const comments = await Comment.find();
   res.send(comments);
 });
 
+//list one comments
 router.get('/:id', async (req, res) => {
   if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
   const comment = await Comment.findById(req.params.id);
@@ -18,8 +21,9 @@ router.get('/:id', async (req, res) => {
   res.send(comment);
 });
 
+//create comment
 router.post('/', auth, async (req, res) => {
-  //check authorization
+  //authorize
   if(req.user.role != 'customer') return res.status(401).send(`Only customers can add comments`);
   //set the customer id
   req.body.customerId = req.user._id
@@ -61,6 +65,7 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+//edit comment
 router.put('/:id', auth, async (req, res) => {
   //check if id is valid
   if(!validateId) return res.status(400).send(`The id ${req.params.id} is not valid`);
@@ -81,6 +86,7 @@ router.put('/:id', auth, async (req, res) => {
   res.send(comment);
 });
 
+//delete comment
 router.delete('/:id', auth, async (req, res) => {
   //check if id is valid
   if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);

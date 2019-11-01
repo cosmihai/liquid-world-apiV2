@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const express = require('express');
 const router = express.Router();
 
-router.post('/restaurant/login', async (req, res) => {
+router.post('/restaurants/login', async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
   if(error) return res.status(400).send(error.details[0].message) ;
@@ -21,7 +21,7 @@ router.post('/restaurant/login', async (req, res) => {
   res.send(token);
 });
 
-router.post('/customer/login', async (req, res) => {
+router.post('/customers/login', async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
   if(error) return res.status(400).send(error.details[0].message) ;
@@ -36,7 +36,7 @@ router.post('/customer/login', async (req, res) => {
   res.send(token);
 });
 
-router.post('/bartender/login', async (req, res) => {
+router.post('/bartenders/login', async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
   if(error) return res.status(400).send(error.details[0].message) ;

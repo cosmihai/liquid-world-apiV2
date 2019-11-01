@@ -45,7 +45,10 @@ router.post('/', auth, async (req, res) => {
         } 
       }
     })
-    .update('customers', { _id: customer._id }, { $push: { favCocktails: cocktail._id }})
+    .update('customers', { _id: customer._id }, { 
+      $push: { favCocktails: cocktail._id }})
+    .update('bartenders', { _id: cocktail.owner._id }, { 
+      $inc: { raiting: 1 }})
     .run()
     res.send(like);
   }
@@ -81,6 +84,8 @@ router.delete('/', auth, async (req, res) => {
     .update('customers', { _id: customer._id }, { 
       $pull: { favCocktails: cocktail._id }
     })
+    .update('bartenders', { _id: cocktail.owner._id }, { 
+      $inc: { raiting: -1 }})
     .run()
     res.send(`Cocktail ${cocktail.name} is no longer in your favorite list`);
   }

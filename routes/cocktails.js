@@ -32,7 +32,7 @@ router.post('/', auth, async (req, res) => {
   if(error) return res.status(400).send(error.details[0].message);
   //check name availability
   const exist = await Cocktail.findOne({name: req.body.name});
-  if(exist) return res.status(400).send(`"${exist.name}" already in use!`);
+  if(exist) return res.status(400).send(`Name "${exist.name}" already in use!`);
   //create and save the new cocktail
   const cocktail = new Cocktail(req.body);
   cocktail.owner = {
@@ -103,18 +103,11 @@ router.delete('/:id', auth, async (req, res) => {
   //authorize
   if(req.user._id != cocktail.owner._id) return res.status(401).send(`You are not authorized to delete this cocktail`);
   //remove the cocktail
-  const me = await Bartender.findById(req.user._id);
-  if(!me) return res.send('not me')
-  // cocktail.remove()
-  // .then(async () => {
-  //   await me.update({$pull :{ personalCocktails: {_id: cocktail._id}  }});
-  //   res.send('done')
-  // })
   try {
     new Fawn.Task()
     .remove('cocktails', { _id: cocktail._id })
-    .update('bartenders', { _id: me._id }, {
-      $pull: { personalCocktails: { name: cocktail.name }}
+    .update('bartenders', { _id: cocktail.owner._id }, {
+      $pull: { personalCocktails: { _id: cocktail._id }}
     })
     .run()
     res.send(`Cocktail "${cocktail.name}" was successfully removed from DB`);

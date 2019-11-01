@@ -30,7 +30,6 @@
   - imgPath: _string_
   
 - rating: _object_
-
   - votes: _number_
   - stars: _number_
 
@@ -70,6 +69,8 @@
     - imgPath: _string_
   - username: _string_
   
+- favCocktails: _[objectId, ref: cocktails]_
+
 - role: _string_
 
   
@@ -88,20 +89,19 @@
   - imgName: _string_
   - imgPath: _string_
   
-- description: _string_
-
 - personalInfo: _object_
   - firstName: _string_
   - lastName: _string_
-  - phone: _number_
-  - experience: _[object]_
-    - place: _string_
-    - from: _date_
-    - until: _date_
-    - position: _string_
+  - phone: _string__
+  - description: _string_
+
+- experience: _[object]_
+  - place: _string_
+  - from: _date_
+  - until: _date_
+  - position: _string_
   
 - personalCocktails: _[object]_
-
   - cocktailId: _ObjectId_
   - name: _string_
   - category: _string_
@@ -127,7 +127,6 @@
   - role: _string_
   
 - recipient: _object_
-
   - restaurantId: _ObjectId_
   - name: _string_
   - city: _string_
@@ -145,7 +144,6 @@
 - category: _string_
 
 - ingredients: [_object_]
-
   - unit: _string_
   - amount: _number_
   - ingredientName: _string_
@@ -158,22 +156,23 @@
 - isIBA: _boolean_
 
 - image : _object_
-
   - imgName: _string_
   - imgPath: _string_
 
 - owner: _object_
-
   - bartenderId: _ObjectId_
   - username: _string_
   - avatar: _object_
+    - imgName: _string_
+    - imgPath: _string_
 
 - likes: _object_
-
-  - count: _number_
-  - customerId: _ObjectId_
-  - customerUsername: _string_
   - likeId: _ObjectId_
+  - customerId: _ObjectId_
+  - username: _string_
+  - avatar: _object_
+    - imgName: _string_
+    - imgPath: _string_
   
   
 
@@ -188,9 +187,9 @@
 ## End points
 
 __api/auth__
-- _restaurant/login_ => login as a restaurant user
-- _customer/login_ => login as a customer user
-- _bartender/login_ => login as a bartender user
+- _restaurants/login_ => login as a restaurant user
+- _customers/login_ => login as a customer user
+- _bartenders/login_ => login as a bartender user
 
 __api/restaurants__
 - _get_ / => list all restaurants
@@ -221,7 +220,7 @@ __api/customers__
 - _get_ /me => list my customer profile
 - _get_ /:id => list one customer profile
 - _post_ / => create one customer user
-- _put_ /:me => edit my customer profile
+- _put_ /me => edit my customer profile
 - _put_ /me/change-password => edit password
 - _put_ /me/set-avatar => set/edit avatar
 - _put_ /me/add-fav_restaurants/:restaurantId => add a restaurant to favorites
@@ -231,10 +230,23 @@ __api/customers__
 - _delete_ /me/ => remove customer profile
 
 __api/comments__
+- _get_ / => list all comments
+- _get_ /:id => list one comment
+- _post_ / => create a comment
+- _put_ /:id => edit a comment
+- _delete_ /:id => delete a comment
 
 __api/cocktails__
+- _get_ / => list all cocktails
+- _get_ /:id => list one cocktail
+- _post_ / => create one cocktail
+- _put_ /:id/set-image => set/edit the cocktail's image
+- _delete_ /:id => delete one cocktail
 
 __api/likes__
+- _get_ / => list all likes
+- _post_ / => give a like
+- _delete_ / => remove a like
 
 
 
