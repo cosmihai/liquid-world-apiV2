@@ -76,6 +76,31 @@ const customerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cocktail'
   }],
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comments'
+  }],
+  ratedRestaurants: [{
+    type: new mongoose.Schema({
+      restaurantId: {
+        type: String,
+        required: true
+      },
+      restaurantName: {
+        type: String,
+        required: true,
+        minlength: 2,
+        maxlength: 255,
+        trim: true
+      },
+      rate: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5
+      }
+    })
+  }],
   role: {
     type: String,
     default: 'customer'

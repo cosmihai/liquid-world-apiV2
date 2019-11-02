@@ -57,6 +57,9 @@ router.post('/', auth, async (req, res) => {
     .update('restaurants', { _id: restaurant._id }, {
       $push: { comments: comment._id }
     })
+    .update('customers', { _id: customer._id }, {
+      $push: { comments: comment._id }
+    })
     .run()
     res.send(comment);
   }
@@ -100,6 +103,9 @@ router.delete('/:id', auth, async (req, res) => {
     new Fawn.Task()
     .remove('comments', { _id: comment._id })
     .update('restaurants', { _id: comment.recipient._id }, {
+      $pull: { comments: comment._id }
+    })
+    .update('customers', { _id: comment.author._id }, {
       $pull: { comments: comment._id }
     })
     .run()

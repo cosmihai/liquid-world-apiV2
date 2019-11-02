@@ -1,6 +1,8 @@
 const auth = require('../middlewares/auth');
+const Fawn = require('fawn');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+const { Customer } = require('../models/customer');
 const { Restaurant, validateRestaurant, validateId, validatePassword, validateImage } = require('../models/restaurant');
 const express = require('express');
 const router = express.Router();
@@ -34,6 +36,9 @@ router.get('/:id', async (req, res) => {
 router.put('/:id/rate', auth, async (req, res) => {
   //authorize
   if(req.user.role === 'restaurant') return res.status(401).send('Unauthorized');
+  //get the customer
+  const customer = await Customer.findById(req.user._id);
+  if(!customer) return res.status(400).send('No customer found with this id!');
   //check if id is valid
   const { valid, message } = validateId(req.params.id);
   if(!valid) return res.status(400).send(message);
@@ -41,14 +46,51 @@ router.put('/:id/rate', auth, async (req, res) => {
   if(!req.body.rate || req.body.rate < 1 || req.body.rate > 5) {
     return res.status(400).send('Rate must be a number between 1 and 5!');
   };
-  //update rating
+  //check if the customer already rated this restaurant
+  let previousRate;
+  const alreadyRated = customer.ratedRestaurants.find(elem => elem.restaurantId == req.params.id);
+  if(alreadyRated) {
+    previousRate = alreadyRated.rate;
+    customer.ratedRestaurants = customer.ratedRestaurants.filter(elem => elem.restaurantId != req.params.id);
+    await customer.save()
+  };
+  //get the restaurant
   const restaurant = await Restaurant.findById(req.params.id);
   let { votes, stars } = restaurant.rating;
+  //delete the previous rate if exist
+  if(alreadyRated) {
+    if (votes === 1) {
+      stars = 0;
+      votes = 0;
+    }else {
+      stars = ((stars*votes) - previousRate)/(votes-1);
+      votes --;
+    }
+  }
+  //update rating
   stars = (stars * votes + req.body.rate)/(votes + 1);
   votes ++;
-  restaurant.rating = { votes, stars };
-  restaurant.save();
-  res.send(_.pick(restaurant, ['_id', 'name', 'rating']));
+  try {
+    new Fawn.Task()
+    .update('restaurants', { _id: restaurant._id }, {
+      rating: {
+        votes: votes,
+        stars: stars
+      }
+    })
+    .update('customers', { _id: customer._id }, {
+      $push: { ratedRestaurants: {
+        restaurantId: restaurant._id,
+        restaurantName: restaurant.name,
+        rate: req.body.rate
+      }}
+    })
+    .run()
+    res.send({votes: votes, stars: stars});
+  }
+  catch(ex) {
+    res.status(500).send('Exception: \n' + ex);
+  }
 });
 
 //create a restaurant profile

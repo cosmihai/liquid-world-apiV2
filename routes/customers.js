@@ -143,7 +143,7 @@ router.delete('/me/remove-fav_restaurants/:restaurantId', auth, async (req, res)
 });
 
 // add bartender to favorites
-router.put('/me/add-fav_bartender/:bartenderId', auth, async (req, res) => {
+router.put('/me/add-fav_bartenders/:bartenderId', auth, async (req, res) => {
   //set the 'me' user
   const me = await Customer.findById(req.user._id);
   if(!me) return res.status(400).send(`Invalid token provided`);
@@ -168,7 +168,7 @@ router.put('/me/add-fav_bartender/:bartenderId', auth, async (req, res) => {
 });
 
 // remove bartender from favorites
-router.delete('/me/remove-fav_bartender/:bartenderId', auth, async (req, res) => {
+router.delete('/me/remove-fav_bartenders/:bartenderId', auth, async (req, res) => {
   //set the 'me' user
   const me = await Customer.findById(req.user._id);
   if(!me) return res.status(400).send(`Invalid token provided`);
