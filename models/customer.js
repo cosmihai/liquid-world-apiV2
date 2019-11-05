@@ -78,7 +78,7 @@ const customerSchema = new mongoose.Schema({
   }],
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Comments'
+    ref: 'Comment'
   }],
   ratedRestaurants: [{
     type: new mongoose.Schema({

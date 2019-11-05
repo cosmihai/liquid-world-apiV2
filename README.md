@@ -7,7 +7,7 @@
 
 > __Restaurant__
 
-- id: _string_
+- _id: _string_
 
 - name: _string_
 
@@ -45,7 +45,7 @@
 
 > __Customer__
 
-- id: _string_
+- _id: _string_
 
 - username: _string_
 
@@ -58,18 +58,25 @@
   - imgPath: _string_
   
 - favRestaurants: _[object]_
-  - restaurantId: _ObjectId_
+  - _id: _ObjectId_
   - name: _string_
   - city: _string_ 
   
 - favBartender: _[object]_
-  - bartenderId: _ObjectId_
+  - _id: _ObjectId_
   - avatar: _object_
     - imgName: _string_
     - imgPath: _string_
   - username: _string_
   
-- favCocktails: _[objectId, ref: cocktails]_
+- favCocktails: _[objectId, ref: Cocktail]_
+
+- comments: _[objectId, ref: Comment]_
+
+- ratedRestaurants: _[object]_
+ - restaurantId: _String_
+ - restaurantName: _String_
+ - rate: _Number_
 
 - role: _string_
 
@@ -77,7 +84,7 @@
 
 > __Bartender__
 
-- id: _string_
+- _id: _string_
 
 - username: _string_
 
@@ -96,13 +103,14 @@
   - description: _string_
 
 - experience: _[object]_
+  - _id: _ObjectId_
   - place: _string_
   - from: _date_
   - until: _date_
   - position: _string_
   
 - personalCocktails: _[object]_
-  - cocktailId: _ObjectId_
+  - _id: _ObjectId_
   - name: _string_
   - category: _string_
   - image: _object_
@@ -117,7 +125,7 @@
 
 > __Comment__
 
-- id: _string_
+- _id: _string_
 
 - text: _string_
 
@@ -135,7 +143,7 @@
 
 > __Cocktail__
 
-- id: _string_
+- _id: _string_
 
 - name: _string_
 

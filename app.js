@@ -1,4 +1,6 @@
 require('express-async-errors');
+const winston = require('winston');
+require('winston-mongodb');
 const Fawn = require('fawn');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
@@ -17,7 +19,14 @@ const express = require('express');
 const app = express();
 Fawn.init(mongoose);
 
+winston.add(winston.transports.File, { filename: 'logfile.log' });
+winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/LWApi'});
+
 const port = process.env.PORT || 3000;
+if(!config.get('jwtKey')) {
+  console.error('FATAL ERROR: jwtKey is not defined.');
+  process.exit(1);
+}
 console.log(`App: ${config.get("appName")}\nEnv: ${app.get("env")}`);
 
 //DB connection
