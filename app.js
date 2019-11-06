@@ -1,42 +1,38 @@
 require('express-async-errors');
 const winston = require('winston');
 require('winston-mongodb');
-const Fawn = require('fawn');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
-const error = require('./middlewares/error');
-const morgan = require('morgan');
 const config = require('config');
-const mongoose = require('mongoose');
-const authRoute = require('./routes/auth');
-const bartendersRoute = require('./routes/bartenders');
-const cocktailsRoute = require('./routes/cocktails');
-const commentsRoute = require('./routes/comments');
-const customersRoute = require('./routes/customers');
-const restaurantsRoute = require('./routes/restaurants');
-const likesRoute = require('./routes/likes');
 const express = require('express');
 const app = express();
-Fawn.init(mongoose);
+require('./startup/routes')(app);
+require('./startup/db')();
 
-//handle uncaught exceptions
-process.on('uncaughtException', ex => {
-  winston.error(ex.message, ex);
-  process.exit(1);
-});
 
-//catch unhandled promise rejection
+//handle uncaught exceptions from outside of express context
+// process.on('uncaughtException', ex => {
+//   winston.error(ex.message, ex);
+//   process.exit(1);
+// });
+
+//catch unhandled promise rejection from outside of express context
+// process.on('unhandledRejection', ex => {
+//   winston.error(ex.message, ex);
+//   process.exit(1);
+// });
+
+//same as above but with winston
+winston.handleExceptions(
+  new winston.transports.File({ filename: 'uncaughtExceptions.log' })
+);
+//because winston can not handle promise rejection we transform the rejection into exception
 process.on('unhandledRejection', ex => {
-  winston.error(ex.message, ex);
-  process.exit(1);
+  throw ex;
 });
-
+//log errors from inside express context
 winston.add(winston.transports.File, { filename: 'logfile.log' });
 winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/LWApi'});
-
-// throw new Error('Error from outside of express context');
-const p = Promise.reject(new Error('Promise rejection unhandled'));
-p.then(() => console.log('Done'))
 
 const port = process.env.PORT || 3000;
 if(!config.get('jwtKey')) {
@@ -44,30 +40,5 @@ if(!config.get('jwtKey')) {
   process.exit(1);
 }
 console.log(`App: ${config.get("appName")}\nEnv: ${app.get("env")}`);
-
-//DB connection
-mongoose.connect('mongodb://localhost/LWApi', {
-  useNewUrlParser: true,  
-  useUnifiedTopology: true, 
-  useCreateIndex: true,
-  useFindAndModify: false})
-.then(() => console.log('connected to DB ...'));
-
-//middlewares
-app.use(express.json())
-if(app.get("env") === 'development') {
-  app.use(morgan('tiny'));
-  console.log('morgan enabled...')
-};
-app.use('/api/auth', authRoute);
-app.use('/api/bartenders', bartendersRoute);
-app.use('/api/cocktails', cocktailsRoute);
-app.use('/api/comments', commentsRoute);
-app.use('/api/customers', customersRoute);
-app.use('/api/restaurants', restaurantsRoute);
-app.use('/api/likes', likesRoute);
-app.use('**', (req, res) => res.status(404).send('Inexistent resource'));
-app.use(error);
-
 
 app.listen(port, console.log(`app started on port ${port} ..`))
