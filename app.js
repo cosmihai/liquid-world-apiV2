@@ -19,8 +19,24 @@ const express = require('express');
 const app = express();
 Fawn.init(mongoose);
 
+//handle uncaught exceptions
+process.on('uncaughtException', ex => {
+  winston.error(ex.message, ex);
+  process.exit(1);
+});
+
+//catch unhandled promise rejection
+process.on('unhandledRejection', ex => {
+  winston.error(ex.message, ex);
+  process.exit(1);
+});
+
 winston.add(winston.transports.File, { filename: 'logfile.log' });
 winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/LWApi'});
+
+// throw new Error('Error from outside of express context');
+const p = Promise.reject(new Error('Promise rejection unhandled'));
+p.then(() => console.log('Done'))
 
 const port = process.env.PORT || 3000;
 if(!config.get('jwtKey')) {

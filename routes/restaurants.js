@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 //get the restaurant profile
 router.get('/me', auth, async (req, res) => {
   //get the 'me' user
-  const me = await Restaurant.findById(req.user._id, "-password");
+  const me = await Restaurant.findById(req.user._id, "-password").populate('comments');
   if(!me) return res.status(400).send(`Invalid token provided`);
   res.send(me);
 });
