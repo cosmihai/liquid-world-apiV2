@@ -1,3 +1,4 @@
+const winston = require('winston');
 const express = require('express');
 const error = require('../middlewares/error');
 const morgan = require('morgan');
@@ -14,7 +15,7 @@ module.exports = function(app) {
   app.use(express.json())
   if(app.get("env") === 'development') {
     app.use(morgan('tiny'));
-    console.log('morgan enabled...')
+    winston.info('morgan enabled...')
   };
   app.use('/api/auth', authRoute);
   app.use('/api/bartenders', bartendersRoute);
