@@ -1,0 +1,5 @@
+{
+  "jwtKey": "123456",
+  "db": "mongodb://localhost/LWApi_test"
+
+}

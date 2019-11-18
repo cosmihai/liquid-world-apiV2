@@ -1,7 +1,8 @@
 const auth = require('../middlewares/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-const { Bartender, validateBartender, validateId, validateExpirience, validateImage, validatePassword } = require('../models/bartender');
+const { Bartender, validateBartender, validateExpirience, validateImage, validatePassword } = require('../models/bartender');
+const validateId = require('../middlewares/validateId');
 const express = require('express');
 const router = express.Router();
 
@@ -20,13 +21,11 @@ router.get('/me', auth, async (req, res) => {
 });
 
 //get a specific bartender
-router.get('/:id', async (req, res) => {
-  //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`); 
+router.get('/:id', validateId, async (req, res) => {
   //get the bartender
   const bartender = await Bartender.findById(req.params.id, "-password");
   //check if there is a bartender with the given id
-  if(!bartender) return res.status(400).send(`No bartender with this id ${req.params.id}`);
+  if(!bartender) return res.status(404).send(`No bartender with this id ${req.params.id}`);
   res.send(bartender);
 });
 

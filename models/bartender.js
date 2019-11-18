@@ -162,10 +162,6 @@ function validateExpirience(exp) {
   return error;
 };
 
-function validateId(id) {
-  return mongoose.Types.ObjectId.isValid(id);
-};
-
 function validatePassword(pass) {
   const passSchema = Joi.object({
     password: Joi.string().min(6).max(255).required()
@@ -187,6 +183,5 @@ const Bartender = mongoose.model('Bartender', bartenderSchema);
 module.exports.Bartender = Bartender;
 module.exports.validateBartender = validateBartender;
 module.exports.validateExpirience = validateExpirience;
-module.exports.validateId = validateId;
 module.exports.validatePassword = validatePassword;
 module.exports.validateImage = validateImage;

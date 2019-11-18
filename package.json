@@ -1,12 +1,13 @@
 {
   "name": "liquid-world-apiv2",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose"
   },
   "author": "Mihai Costantea",
   "license": "ISC",
@@ -25,5 +26,9 @@
     "morgan": "^1.9.1",
     "winston": "^2.4.0",
     "winston-mongodb": "3.0.0"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
   }
 }

@@ -1,3 +1,4 @@
+const config = require('config');
 const winston = require('winston');
 const mongoose = require('mongoose');
 const Fawn = require('fawn');
@@ -5,10 +6,11 @@ Fawn.init(mongoose);
 
 module.exports = function() {
   //DB connection
-  mongoose.connect('mongodb://localhost/LWApi', {
+  let db = config.get('db')
+  mongoose.connect(db, {
   useNewUrlParser: true,  
   useUnifiedTopology: true, 
   useCreateIndex: true,
   useFindAndModify: false})
-  .then(() => winston.info('connected to DB ...'));
+  .then(() => winston.info(`connected to ${db} ...`));
 }
