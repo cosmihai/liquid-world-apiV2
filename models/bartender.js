@@ -138,7 +138,7 @@ function validateBartender(bartender) {
   const personalInfoSchema = Joi.object({
     firstName: Joi.string().min(2).max(255).trim().required(),
     lastName: Joi.string().min(2).max(255).trim().required(),
-    phone: Joi.string().min(6).regex(/^[0-9]+$/),
+    phone: Joi.string().min(6).max(50).regex(/^[0-9]+$/),
     description: Joi.string().min(10).max(2048).required()
   });
   const schema = Joi.object({

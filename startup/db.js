@@ -5,7 +5,6 @@ const Fawn = require('fawn');
 Fawn.init(mongoose);
 
 module.exports = function() {
-  //DB connection
   let db = config.get('db')
   mongoose.connect(db, {
   useNewUrlParser: true,  
