@@ -24,6 +24,6 @@ module.exports = function(app) {
   app.use('/api/customers', customersRoute);
   app.use('/api/restaurants', restaurantsRoute);
   app.use('/api/likes', likesRoute);
-  app.use('**', (req, res) => res.status(404).send('Inexistent resource'));
+  app.use('**', (req, res) => res.status(404).send({message:'Inexistent resource'}));
   app.use(error);
 }

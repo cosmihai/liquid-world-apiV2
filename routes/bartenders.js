@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 router.get('/me', auth, async (req, res) => {
   //get the 'me' user
   const me = await Bartender.findById(req.user._id, "-password");
-  if(!me) return res.status(400).send(`Invalid token provided`);
+  if(!me) return res.status(400).send({message:'Invalid token provided'});
   res.send(me);
 });
 
@@ -55,10 +55,13 @@ router.put('/me', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
   //prevent password to be changed
-  if(req.body.password) return res.status(400).send('"Passowrd" is not allowed!');
+  if(req.body.password) return res.status(400).send({message: '"Passowrd" is not allowed!'});
   //search for errors in the body of the request
   const error = validateBartender(req.body);
   if(error) return res.status(400).send(error.details[0]);
+  // check if the email is available
+  const exist = await Bartender.findOne({email: req.body.email});
+  if(exist._id != id) return res.status(400).send({message: `"${exist.email}" already in use!`});
   //update the profile
   const me = await Bartender.findByIdAndUpdate(id, req.body, {new: true});
   if(!me) return res.status(400).send(`Invalid token provided`);
