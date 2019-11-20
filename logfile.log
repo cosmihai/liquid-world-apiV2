@@ -771,3 +771,99 @@
 {"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-18T23:07:32.190Z"}
 {"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-18T23:07:32.192Z"}
 {"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-18T23:07:32.230Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-19T16:05:20.006Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-19T16:05:20.033Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-19T16:05:21.078Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-19T16:42:33.042Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-19T16:42:33.057Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-19T16:42:34.109Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-19T16:43:06.976Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-19T16:43:06.982Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-19T16:43:08.025Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T15:59:45.044Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T15:59:45.050Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T15:59:46.095Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:00:04.737Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:00:04.743Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:00:05.792Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:01:16.316Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:01:16.322Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:01:17.367Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:02:07.261Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:02:07.267Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:02:08.310Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:03:12.668Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:03:12.674Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:03:13.717Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:03:26.197Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:03:26.204Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:03:27.250Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:04:01.963Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:04:01.969Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:04:03.013Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:08:10.051Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:08:10.057Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:08:11.102Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:08:51.896Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:08:51.902Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:08:52.948Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:09:16.129Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:09:16.135Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:09:17.179Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:10:21.209Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:10:21.214Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:10:22.259Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:11:30.407Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:11:30.413Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:11:31.458Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:12:11.144Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:12:11.150Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:12:12.194Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:13:22.085Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:13:22.092Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:13:23.137Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:13:59.841Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:13:59.847Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:14:00.890Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:15:09.894Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:15:09.900Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:15:10.945Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:16:27.844Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:16:27.850Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:16:28.903Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:18:55.353Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:18:55.359Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:18:56.403Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:21:00.290Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:21:00.296Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:21:01.341Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:21:12.778Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:21:12.785Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:21:13.831Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:21:33.220Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:21:33.226Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:21:34.291Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:21:51.190Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:21:51.196Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:21:52.241Z"}
+{"level":"info","message":"morgan enabled...","timestamp":"2019-11-20T16:25:37.369Z"}
+{"level":"info","message":"morgan enabled...","timestamp":"2019-11-20T16:26:47.149Z"}
+{"level":"info","message":"morgan enabled...","timestamp":"2019-11-20T16:28:33.589Z"}
+{"level":"info","message":"morgan enabled...","timestamp":"2019-11-20T16:30:12.011Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: development","timestamp":"2019-11-20T16:30:12.043Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:30:12.046Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi ...","timestamp":"2019-11-20T16:30:13.080Z"}
+{"message":"data and salt arguments required","stack":"Error: data and salt arguments required\n    at Object.hash (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\bcrypt\\bcrypt.js:138:17)\n    at C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\bcrypt\\promises.js:29:12\n    at new Promise (<anonymous>)\n    at Object.module.exports.promise (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\bcrypt\\promises.js:20:12)\n    at Object.hash (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\bcrypt\\bcrypt.js:134:25)\n    at router.post (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\routes\\bartenders.js:44:37)","level":"error","timestamp":"2019-11-20T16:32:48.584Z"}
+{"message":"Unexpected string in JSON at position 263","stack":"SyntaxError: Unexpected string in JSON at position 263\n    at JSON.parse (<anonymous>)\n    at parse (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\body-parser\\lib\\types\\json.js:89:19)\n    at C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\body-parser\\lib\\read.js:121:18\n    at invokeCallback (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\raw-body\\index.js:224:16)\n    at done (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\raw-body\\index.js:213:7)\n    at IncomingMessage.onEnd (C:\\Users\\MCOSTANTEA\\Documents\\liquid-world-apiV2\\node_modules\\raw-body\\index.js:273:7)\n    at IncomingMessage.emit (events.js:182:13)\n    at endReadableNT (_stream_readable.js:1094:12)\n    at process._tickCallback (internal/process/next_tick.js:63:19)","expose":true,"statusCode":400,"status":400,"body":"    {\r\n\r\n        \"personalInfo\": {\r\n            \"firstName\": \"Michael\",\r\n            \"lastName\": \"Moore\",\r\n            \"phone\": \"666555\",\r\n            \"description\": \"this is the description of Michael Moore Doe\"\r\n        },\r\n        \"password\": \"12345\"\r\n        \"username\": \"moore\",\r\n        \"email\": \"moore@gmail.com\"\r\n\r\n    }","type":"entity.parse.failed","level":"error","timestamp":"2019-11-20T16:33:07.911Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:37:16.828Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:37:16.834Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:37:17.876Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:37:29.849Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:37:29.855Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:37:30.898Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:38:04.041Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:38:04.046Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:38:05.092Z"}
+{"level":"info","message":"App: liquid-world-apiV2; Env: test","timestamp":"2019-11-20T16:38:41.280Z"}
+{"level":"info","message":"app started on port 3000 ..","timestamp":"2019-11-20T16:38:41.292Z"}
+{"level":"info","message":"connected to mongodb://localhost/LWApi_test ...","timestamp":"2019-11-20T16:38:42.338Z"}

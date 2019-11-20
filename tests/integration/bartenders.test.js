@@ -109,6 +109,33 @@ describe('/api/bartenders', () => {
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch('"username" is not allowed to be empty');
     });
+    it('Should return 400 if password is shorter than 6', async () => {
+      let bartender = bartenderList[0];
+      bartender.password = '12345';
+      const res = await request(server)
+      .post('/api/bartenders')
+      .send(bartender);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"password" length must be at least 6 characters long');
+    });
+    it('Should return 400 if password is greater than 255', async () => {
+      let bartender = bartenderList[0];
+      bartender.password = new Array(257).join('a');
+      const res = await request(server)
+      .post('/api/bartenders')
+      .send(bartender);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"password" length must be less than or equal to 255 characters long');
+    });
+    it('Should return 400 if password is missing', async () => {
+      let bartender = bartenderList[0];
+      bartender.password = '';
+      const res = await request(server)
+      .post('/api/bartenders')
+      .send(bartender);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"password" is not allowed to be empty');
+    });
     it('Should return 400 if email is shorter than 6', async () => {
       let bartender = bartenderList[0];
       bartender.email = 'a@a.a';
@@ -162,6 +189,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"firstName" length must be at least 2 characters long')
     });
     it('Should return 400 if firstName is greater than 255', async () => {
       let bartender = bartenderList[0];
@@ -170,6 +198,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"firstName" length must be less than or equal to 255 characters long');
     });
     it('Should return 400 if firstName is missing', async () => {
       let bartender = bartenderList[0];
@@ -178,6 +207,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"firstName" is not allowed to be empty');
     });
     it('Should return 400 if lastName is shorter than 2', async () => {
       let bartender = bartenderList[0];
@@ -186,6 +216,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"lastName" length must be at least 2 characters long')
     });
     it('Should return 400 if lastName is greater than 255', async () => {
       let bartender = bartenderList[0];
@@ -194,6 +225,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"lastName" length must be less than or equal to 255 characters long');
     });
     it('Should return 400 if lastName is missing', async () => {
       let bartender = bartenderList[0];
@@ -202,30 +234,34 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"lastName" is not allowed to be empty');
     });
     it('Should return 400 if phone is shorter than 6', async () => {
       let bartender = bartenderList[0];
-      bartender.phone = 'a';
+      bartender.personalInfo.phone = '1';
       const res = await request(server)
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"phone" length must be at least 6 characters long');
     });
     it('Should return 400 if phone is greater than 50', async () => {
       let bartender = bartenderList[0];
-      bartender.phone = new Array(52).join('1');
+      bartender.personalInfo.phone = new Array(52).join('1');
       const res = await request(server)
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"phone" length must be less than or equal to 50 characters long');
     });
     it('Should return 400 if phone containes more than numbers', async () => {
       let bartender = bartenderList[0];
-      bartender.phone = '12345a';
+      bartender.personalInfo.phone = '12345a';
       const res = await request(server)
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"phone" with value "12345a" fails to match the required pattern: /^[0-9]+$/');
     });
     it('Should return 400 if description is shorter than 10', async () => {
       let bartender = bartenderList[0];
@@ -234,6 +270,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"description" length must be at least 10 characters long');
     });
     it('Should return 400 if description is greater than 2048', async () => {
       let bartender = bartenderList[0];
@@ -242,6 +279,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"description" length must be less than or equal to 2048 characters long');
     });
     it('Should return 400 if description is missing', async () => {
       let bartender = bartenderList[0];
@@ -250,6 +288,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartender);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"description" is not allowed to be empty');
     });
     it('Should return 400 if email is not unique', async () => {
       await Bartender.create(bartenderList[0]);
@@ -257,6 +296,7 @@ describe('/api/bartenders', () => {
       .post('/api/bartenders')
       .send(bartenderList[0]);
       expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('already in use!');
     })
   });
 });

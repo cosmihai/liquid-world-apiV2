@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
   if(!req.body.password) res.status(400).send('"Password" is required!');
   // check if the email is available
   const exist = await Bartender.findOne({email: req.body.email});
-  if(exist) return res.status(400).send(`"${exist.email}" already in use!`);
+  if(exist) return res.status(400).send({message: `"${exist.email}" already in use!`});
   //encrypt password
   const hash = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, hash);
