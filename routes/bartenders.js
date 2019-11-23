@@ -79,12 +79,12 @@ router.put('/me/change-password', auth, async (req, res) => {
   const me = await Bartender.findById(id);
   if(!me) return res.status(400).send(`Invalid token`);
   //prevent establish the same password as before
-  if(await bcrypt.compare(req.body.password, me.password)) return res.status(400).send(`Can not set the same password`);
+  if(await bcrypt.compare(req.body.password, me.password)) return res.status(400).send({message: 'Can not set the same password'});
   //encrypt and set the new password
   const hash = await bcrypt.genSalt(10);
   me.password = await bcrypt.hash(req.body.password, hash);
   await me.save();
-  res.send(`Password changed for "${me.username}" user.`)
+  res.send({message: `Password changed for "${me.username}" user.`})
 });
 
 //set the avatar
@@ -96,7 +96,7 @@ router.put('/me/set-avatar', auth, async (req, res) => {
   if(error) return res.status(400).send(error.details[0]);
   //set the avatar
   const me = await Bartender.updateOne({_id: id}, { $set: { avatar: req.body } });
-  if(!me.n) return res.status(400).send(`Invalid token provided`);
+  if(!me.n) return res.status(400).send({message: 'Invalid token provided'});
   res.send(me);
 });
 
@@ -109,20 +109,18 @@ router.put('/me/add-experience', auth, async (req, res) => {
   if(error) return res.status(400).send(error.details[0]);
   //check for the bartender with this id and push the experience object
   const me = await Bartender.updateOne({_id: id}, {$push: {experience: req.body}});
-  if(!me.n) return res.status(400).send(`Invalid token proviedd`);
+  if(!me.n) return res.status(400).send({message: 'Invalid token proviedd'});
   res.send(me);
 });
 
 //remove experience
-router.delete('/me/remove-experience/:experienceId', auth, async (req, res) => {
+router.delete('/me/remove-experience/:id', auth, validateId, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
-  //check if the experience id is valid
-  if(!validateId(req.params.experienceId)) return res.status(400).send(`Invalid experience id provided`);
   //remove the experience
-  const me = await Bartender.updateOne({_id: id}, {$pull: {experience: { _id: req.params.experienceId }}});
-  if(!me.n) return res.status(400).send(`Invalid token proviedd`);
-  if(!me.nModified) return res.status(400).send(`No experience with this id`)
+  const me = await Bartender.updateOne({_id: id}, {$pull: {experience: { _id: req.params.id }}});
+  if(!me.n) return res.status(400).send({message: 'Invalid token provided'});
+  if(!me.nModified) return res.status(404).send({message: 'No experience with this id'})
   res.send(me);
 });
 
@@ -132,6 +130,7 @@ router.delete('/me', auth, async (req, res) => {
   const id = req.user._id;
   //remove bartender from DB
   const me = await Bartender.findByIdAndDelete(id);
-  res.send(`${me.username} user was successfully removed from the DB`);
+  if(!me) return res.status(400).send({message: 'Inavalid token provided'});
+  res.send({message: `${me.username} user was successfully removed from the DB`});
 });
 module.exports = router;
