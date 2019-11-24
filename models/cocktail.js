@@ -177,11 +177,6 @@ function validateImage(img) {
   return error;
 };
 
-function validateId(id) {
-  return mongoose.Types.ObjectId.isValid(id);
-};
-
 module.exports.Cocktail = Cocktail;
 module.exports.validateCocktail = validateCocktail;
-module.exports.validateId = validateId;
 module.exports.validateImage = validateImage;

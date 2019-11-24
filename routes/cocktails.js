@@ -1,6 +1,7 @@
 const Fawn = require('fawn');
+const validateId = require('../middlewares/validateId');
 const { Bartender } = require('../models/bartender');
-const { Cocktail, validateCocktail, validateId, validateImage } = require('../models/cocktail');
+const { Cocktail, validateCocktail, validateImage } = require('../models/cocktail');
 const auth = require('../middlewares/auth');
 const express = require('express');
 const router = express.Router();
@@ -12,12 +13,9 @@ router.get('/', async (req, res) => {
 });
 
 //get one cocktail
-router.get('/:id', async (req, res) => {
-  //validate id
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
-  //get the cocktail 
+router.get('/:id', validateId, async (req, res) => {
   const cocktail = await Cocktail.findById(req.params.id);
-  if(!cocktail) return res.status(400).send(`No cocktail with this id: ${req.params.id}`);
+  if(!cocktail) return res.status(404).send({message: `No cocktail with this id: ${req.params.id}`});
   res.send({currentCocktail: cocktail, likes: cocktail.likesCounter});
 });
 
@@ -60,9 +58,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //edit one cocktail
-router.put('/:id', auth, async (req, res) => {
-  //validate the cocktail id
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+router.put('/:id', auth, validateId, async (req, res) => {
   //get the cocktail from the DB
   const cocktail = await Cocktail.findById(req.params.id);
   if(!cocktail) return res.status(400).send(`No cocktail with this id: ${req.params.id}`);
@@ -77,9 +73,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 //set/edit cocktail's image
-router.put('/:id/set-image', auth, async (req, res) => {
-  //validate the cocktail id
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+router.put('/:id/set-image', auth, validateId, async (req, res) => {
   //get the cocktail from the DB
   const cocktail = await Cocktail.findById(req.params.id);
   if(!cocktail) return res.status(400).send(`No cocktail with this id: ${req.params.id}`);
@@ -94,9 +88,7 @@ router.put('/:id/set-image', auth, async (req, res) => {
 });
 
 //delete cocktail
-router.delete('/:id', auth, async (req, res) => {
-  //validate the cocktail id
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${ req.params.id } is not valid`);
+router.delete('/:id', auth, validateId, async (req, res) => {
   //get the cocktail from the DB
   const cocktail = await Cocktail.findById(req.params.id);
   if(!cocktail) return res.status(400).send(`No cocktail with this id: ${ req.params.id }`);
