@@ -92,8 +92,8 @@ describe("/api/bartenders", () => {
     beforeEach(() => {
       bartender = bartenderList[0];
     });
-    async function exec() {
-      return await request(server)
+    function exec() {
+      return request(server)
         .post("/api/bartenders")
         .send(bartender);
     };
@@ -296,8 +296,8 @@ describe("/api/bartenders", () => {
       const bartender = await new Bartender(bartenderList[0]).save();
       token = bartender.generateToken();
     });
-    async function exec() {
-      return await request(server)
+    function exec() {
+      return request(server)
         .put("/api/bartenders/me")
         .set("x-auth-token", token)
         .send(bartenderList[0]);
@@ -529,8 +529,8 @@ describe("/api/bartenders", () => {
       await bartender.save();
       token = bartender.generateToken();
     });
-    async function exec() {
-      return await request(server)
+    function exec() {
+      return request(server)
         .put("/api/bartenders/me/change-password")
         .set("x-auth-token", token)
         .send(payload);
@@ -587,8 +587,8 @@ describe("/api/bartenders", () => {
       await bartender.save();
       token = bartender.generateToken();
     });
-    async function exec() {
-      return await request(server)
+    function exec() {
+      return request(server)
         .put("/api/bartenders/me/set-avatar")
         .set("x-auth-token", token)
         .send(payload);
@@ -645,8 +645,8 @@ describe("/api/bartenders", () => {
       await bartender.save();
       token = bartender.generateToken();
     });
-    async function exec() {
-      return await request(server)
+    function exec() {
+      return request(server)
         .put("/api/bartenders/me/add-experience")
         .set("x-auth-token", token)
         .send(payload);
@@ -746,8 +746,8 @@ describe("/api/bartenders", () => {
       );
       token = bartender.generateToken();
     });
-    async function exec(id) {
-      return await request(server)
+    function exec(id) {
+      return request(server)
         .delete(`/api/bartenders/me/remove-experience/${id}`)
         .set("x-auth-token", token);
     }
