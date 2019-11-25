@@ -22,15 +22,15 @@ router.get('/:id', validateId, async (req, res) => {
 //create one cocktail
 router.post('/', auth, async (req, res) => {
   //check if req.user has bartender rol
-  if(req.user.role != 'bartender') return res.status(401).send(`Only a bartender can create cocktails`)
+  if(req.user.role != 'bartender') return res.status(401).send({message: `Only a bartender can create cocktails`})
   //get the owner
   const owner = await Bartender.findById(req.user._id, "-password");
   //check for errors in the body of the request
   const error = validateCocktail(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //check name availability
   const exist = await Cocktail.findOne({name: req.body.name});
-  if(exist) return res.status(400).send(`Name "${exist.name}" already in use!`);
+  if(exist) return res.status(400).send({message: `Name "${exist.name}" already in use!`});
   //create and save the new cocktail
   const cocktail = new Cocktail(req.body);
   cocktail.owner = {
@@ -66,7 +66,7 @@ router.put('/:id', auth, validateId, async (req, res) => {
   if(req.user._id != cocktail.owner._id) return res.status(401).send(`You are not authorized to edit this cocktail`);
   //validate the body of the request
   const error = validateCocktail(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //save the changes
   const result = await cocktail.update(req.body);
   res.send(result);
@@ -81,7 +81,7 @@ router.put('/:id/set-image', auth, validateId, async (req, res) => {
   if(req.user._id != cocktail.owner._id) return res.status(401).send(`You are not authorized to edit this cocktail`);
   //validate the body of the request
   const error = validateImage(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //save the changes
   const result = await cocktail.update({ image: req.body });
   res.send(result);

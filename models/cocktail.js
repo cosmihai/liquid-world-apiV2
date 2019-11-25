@@ -21,8 +21,6 @@ const cocktailSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    min: 2,
-    max: 255,
     enum: categoryEnum
   },
   ingredients: {
@@ -158,7 +156,7 @@ function validateCocktail(cocktail) {
   const schema = Joi.object({
     name: Joi.string().min(2).max(255).required(),
     glass: Joi.string().min(2).max(255).required(),
-    category: Joi.string().min(2).max(255).valid(...categoryEnum).required(),
+    category: Joi.string().valid(...categoryEnum).required(),
     ingredients: Joi.array().min(2).items(ingredientSchema).required(),
     garnish: Joi.string().min(2).max(255).required(),
     preparation: Joi.string().min(10).max(1024).required()
