@@ -264,5 +264,185 @@ describe("/api/cocktails", () => {
       expect(res.body.owner).toHaveProperty('_id', bartender._id.toString());
     });
 
+    // MISSING ONE TEST. TEST IF COCKTAIL IS ALSO SAVED IN BARTENDER'S PERSONAL COCKTAILS
+  });
+  describe('PUT /:id', () => {
+    let payload;
+    let cocktail;
+    beforeEach(async () => {
+      cocktail = await Cocktail.create(cocktailsList[0]);
+      payload = cocktailsList[0];
+      payload.owner = undefined;
+    });
+    async function exec(tokenArg, cocktailArg) {
+      return request(server)
+      .put('/api/cocktails/' + cocktail._id)
+      .set('x-auth-token', tokenArg)
+      .send(cocktailArg)
+    };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server)
+      .put('/api/cocktails/' + cocktail._id)
+      .send(payload);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('Access denied');
+    });
+    it("Should return 400 if bad token is provided", async () => {
+      const res = await exec('a', payload);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('Invalid token');
+    });
+    it("Should return 404 if bad cocktail id is provided", async () => {
+      const res = await request(server)
+      .put('/api/cocktails/1')
+      .set('x-auth-token', token)
+      .send(payload);
+      expect(res.status).toBe(404);
+      expect(res.body.message).toMatch('Invalid id');
+    });
+    it("Should return 401 if other that owner try to edit the cocktail", async () => {
+      const anotherBartender = await new Bartender({
+        username: "bartenderTest2",
+        email: "bartenderTest2@gmail.com",
+        password: "123456",
+        personalInfo: {
+          firstName: "firstNameTest2",
+          lastName: "lastNameTest2",
+          phone: "654321",
+          description: "this is test description for bartenderTest2"
+        }
+      }).save();
+      const anotherToken = anotherBartender.generateToken();
+      const res = await exec(anotherToken, payload);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('You are not authorized to edit this cocktail')
+    });
+    it("Should return 400 if invalid payload is sent", async () => {
+      payload.name = 'a';
+      const res = await exec(token, payload);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"name" length must be at least 2')
+    });
+    it("Should return 200 if valid cocktail is sent to be updated", async () => {
+      payload.name = 'updated name';
+      const res = await exec(token, payload);
+      const updatedCocktail = await Cocktail.find({name: 'updated name'});
+      expect(res.status).toBe(200);
+      expect(res.body.nModified).toBe(1);
+      expect(updatedCocktail.length).toBe(1);
+    });
+  });
+  describe("PUT /:id/set-image", () => {
+    let payload;
+    let cocktail;
+    beforeEach(async () => {
+      payload = {
+        imgName: 'image name',
+        imgPath : 'image path'
+      };
+      cocktail = await Cocktail.create(cocktailsList[0])
+    });
+    function exec(tokenArg, payloadArg) {
+      return request(server)
+      .put(`/api/cocktails/${cocktail._id}/set-image`)
+      .set('x-auth-token', tokenArg)
+      .send(payloadArg)
+    };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).put(`/api/cocktails/${cocktail._id}/set-image`).send(payload);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('No token provided');
+    });
+    it("Should return 400 if bad token is provided", async () => {
+      const res = await exec('a', payload);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('Invalid token provided');
+    });
+    it("Should return 404 if bad cocktail id is provided", async () => {
+      const res = await request(server)
+      .put(`/api/cocktails/${1}/set-image`)
+      .set('x-auth-token', token)
+      .send(payload);
+      expect(res.status).toBe(404);
+      expect(res.body.message).toMatch('Invalid id provided');
+    });
+    it("Should return 404 if no cocktail is is found with the given id", async () => {
+      const res = await request(server)
+      .put(`/api/cocktails/${new mongoose.Types.ObjectId()}/set-image`)
+      .set('x-auth-token', token)
+      .send(payload);
+      expect(res.status).toBe(404);
+      expect(res.body.message).toMatch('No cocktail with this id');
+    });
+    it("Should return 400 if photo name is not sent", async () => {
+      payload.imgName = '';
+      const res = await exec(token, payload);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"imgName" is not allowed to be empty');
+    });
+    it("Should return 400 if photo path is not sent", async () => {
+      payload.imgPath = '';
+      const res = await exec(token, payload);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"imgPath" is not allowed to be empty');
+    });
+    it("Should return 200 if valid image is sent", async () => {
+      const res = await exec(token, payload);
+      const updatedCocktail = await Cocktail.findById(cocktail._id);
+      expect(res.status).toBe(200);
+      expect(updatedCocktail.image).toHaveProperty('imgName', 'image name')
+    });
+  });
+  describe("DELETE /api/cocktails/:id", () => {
+    let cocktail;
+    beforeEach(async () => {
+      cocktail = await Cocktail.create(cocktailsList[0]);
+    });
+    it("Should return 401 if no token is sent", async () => {
+      const res = await request(server).delete('/api/cocktails/' + cocktail._id);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('No token provided');
+    });
+    it("Should return 404 if bad cocktail id sent", async () => {
+      const res = await request(server)
+      .delete('/api/cocktails/' + '1')
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404);
+      expect(res.body.message).toMatch('Invalid id provided');
+    });
+    it("Should return 404 if no cocktail is found with the given id", async () => {
+      const res = await request(server)
+      .delete('/api/cocktails/' + new mongoose.Types.ObjectId())
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404);
+      expect(res.body.message).toMatch('No cocktail with this id');
+    });
+    it("Should return 401 if the current bartender is not the owner", async () => {
+      const anotherBartender = await new Bartender({
+        username: "bartenderTest2",
+        email: "bartenderTest2@gmail.com",
+        password: "123456",
+        personalInfo: {
+          firstName: "firstNameTest2",
+          lastName: "lastNameTest2",
+          phone: "654321",
+          description: "this is test description for bartenderTest2"
+        }
+      }).save();
+      const anotherToken = anotherBartender.generateToken();
+      const res = await request(server)
+      .delete('/api/cocktails/' + cocktail._id)
+      .set('x-auth-token', anotherToken);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('not authorized');
+    });
+    it("Should return 200 and remove the cocktail if correct request is sent", async () => {
+      // const res = await request(server)
+      // .delete('/api/cocktails/' + cocktail._id)
+      // .set('x-auth-token', token);
+      // expect(res.status).toBe(200);
+      const currentBartender = await Bartender.findById(bartender._id);
+      expect(currentBartender.personalCocktails.length).toBe(1)
+    });
   });
 });

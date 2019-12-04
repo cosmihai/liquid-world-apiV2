@@ -61,9 +61,9 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id', auth, validateId, async (req, res) => {
   //get the cocktail from the DB
   const cocktail = await Cocktail.findById(req.params.id);
-  if(!cocktail) return res.status(400).send(`No cocktail with this id: ${req.params.id}`);
+  if(!cocktail) return res.status(404).send({message: `No cocktail with this id: ${req.params.id}`});
   //authorize
-  if(req.user._id != cocktail.owner._id) return res.status(401).send(`You are not authorized to edit this cocktail`);
+  if(req.user._id != cocktail.owner._id) return res.status(401).send({message: `You are not authorized to edit this cocktail`});
   //validate the body of the request
   const error = validateCocktail(req.body);
   if(error) return res.status(400).send(error.details[0]);
@@ -76,9 +76,9 @@ router.put('/:id', auth, validateId, async (req, res) => {
 router.put('/:id/set-image', auth, validateId, async (req, res) => {
   //get the cocktail from the DB
   const cocktail = await Cocktail.findById(req.params.id);
-  if(!cocktail) return res.status(400).send(`No cocktail with this id: ${req.params.id}`);
+  if(!cocktail) return res.status(404).send({message: `No cocktail with this id: ${req.params.id}`});
   //authorize
-  if(req.user._id != cocktail.owner._id) return res.status(401).send(`You are not authorized to edit this cocktail`);
+  if(req.user._id != cocktail.owner._id) return res.status(401).send({message: `You are not authorized to edit this cocktail`});
   //validate the body of the request
   const error = validateImage(req.body);
   if(error) return res.status(400).send(error.details[0]);
@@ -91,9 +91,9 @@ router.put('/:id/set-image', auth, validateId, async (req, res) => {
 router.delete('/:id', auth, validateId, async (req, res) => {
   //get the cocktail from the DB
   const cocktail = await Cocktail.findById(req.params.id);
-  if(!cocktail) return res.status(400).send(`No cocktail with this id: ${ req.params.id }`);
+  if(!cocktail) return res.status(404).send({message: `No cocktail with this id: ${ req.params.id }`});
   //authorize
-  if(req.user._id != cocktail.owner._id) return res.status(401).send(`You are not authorized to delete this cocktail`);
+  if(req.user._id != cocktail.owner._id) return res.status(401).send({message: `You are not authorized to delete this cocktail`});
   //remove the cocktail
   try {
     new Fawn.Task()
@@ -102,7 +102,7 @@ router.delete('/:id', auth, validateId, async (req, res) => {
       $pull: { personalCocktails: { _id: cocktail._id }}
     })
     .run()
-    res.send(`Cocktail "${cocktail.name}" was successfully removed from DB`);
+    res.send({message: `Cocktail "${cocktail.name}" was successfully removed from DB`});
   }
   catch(ex) {
     res.status(500).send('Exception: \n' + ex);
