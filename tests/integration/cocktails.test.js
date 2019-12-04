@@ -397,6 +397,7 @@ describe("/api/cocktails", () => {
     let cocktail;
     beforeEach(async () => {
       cocktail = await Cocktail.create(cocktailsList[0]);
+      // await Bartender.updateOne({_id: bartender._id}, {$push: {personalCocktails: cocktail}});
     });
     it("Should return 401 if no token is sent", async () => {
       const res = await request(server).delete('/api/cocktails/' + cocktail._id);
@@ -437,12 +438,12 @@ describe("/api/cocktails", () => {
       expect(res.body.message).toMatch('not authorized');
     });
     it("Should return 200 and remove the cocktail if correct request is sent", async () => {
-      // const res = await request(server)
-      // .delete('/api/cocktails/' + cocktail._id)
-      // .set('x-auth-token', token);
-      // expect(res.status).toBe(200);
-      const currentBartender = await Bartender.findById(bartender._id);
-      expect(currentBartender.personalCocktails.length).toBe(1)
+      const res = await request(server)
+      .delete('/api/cocktails/' + cocktail._id)
+      .set('x-auth-token', token);
+      expect(res.status).toBe(200);
+      expect(res.body.message).toMatch('was successfully removed');
     });
+    // MISSING ONE TEST. TEST IF COCKTAIL IS ALSO DELETED FROM BARTENDER'S PERSONAL COCKTAILS
   });
 });
