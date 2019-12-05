@@ -61,9 +61,9 @@ describe("/api/cocktails", () => {
     ];
   });
   afterEach(async () => {
-    server.close();
     await Bartender.deleteMany({});
     await Cocktail.deleteMany({});
+    server.close();
   });
   describe("GET /", () => {
 
