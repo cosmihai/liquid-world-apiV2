@@ -262,9 +262,10 @@ describe("/api/cocktails", () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('name', 'cocktail1');
       expect(res.body.owner).toHaveProperty('_id', bartender._id.toString());
+      const updatedBartender = await Bartender.findById(bartender._id);
+      expect(updatedBartender.personalCocktails.length).toBe(1)
+      expect(updatedBartender.personalCocktails[0].name).toMatch('cocktail1')
     });
-
-    // MISSING ONE TEST. TEST IF COCKTAIL IS ALSO SAVED IN BARTENDER'S PERSONAL COCKTAILS
   });
   describe('PUT /:id', () => {
     let payload;
@@ -397,7 +398,7 @@ describe("/api/cocktails", () => {
     let cocktail;
     beforeEach(async () => {
       cocktail = await Cocktail.create(cocktailsList[0]);
-      // await Bartender.updateOne({_id: bartender._id}, {$push: {personalCocktails: cocktail}});
+      await Bartender.updateOne({_id: bartender._id}, {$push: {personalCocktails: cocktail}});
     });
     it("Should return 401 if no token is sent", async () => {
       const res = await request(server).delete('/api/cocktails/' + cocktail._id);
@@ -443,7 +444,8 @@ describe("/api/cocktails", () => {
       .set('x-auth-token', token);
       expect(res.status).toBe(200);
       expect(res.body.message).toMatch('was successfully removed');
+      const updatedBartender = await Bartender.findById(bartender._id);
+      expect(updatedBartender.personalCocktails.length).toBe(0)
     });
-    // MISSING ONE TEST. TEST IF COCKTAIL IS ALSO DELETED FROM BARTENDER'S PERSONAL COCKTAILS
   });
 });

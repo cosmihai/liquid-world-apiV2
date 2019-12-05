@@ -50,7 +50,9 @@ router.post('/', auth, async (req, res) => {
       }}
     })
     .run()
-    res.send(cocktail)
+    .then(() => {
+      res.send(cocktail);
+    })
   }
   catch(ex) {
     res.status(500).send('Exception: \n' + ex);
@@ -102,7 +104,9 @@ router.delete('/:id', auth, validateId, async (req, res) => {
       $pull: { personalCocktails: { _id: cocktail._id }}
     })
     .run()
-    res.send({message: `Cocktail "${cocktail.name}" was successfully removed from DB`});
+    .then(() => {
+      res.send({message: `Cocktail "${cocktail.name}" was successfully removed from DB`});
+    })
   }
   catch(ex) {
     res.status(500).send('Exception: \n' + ex);
