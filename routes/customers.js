@@ -1,3 +1,4 @@
+const validateId = require('../middlewares/validateId');
 const auth = require('../middlewares/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
@@ -24,12 +25,10 @@ router.get('/me', auth, async (req, res) => {
 });
 
 //get one customer
-router.get('/:id', async (req, res) => {
-  //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+router.get('/:id', validateId, async (req, res) => {
   //get the customer
   const customer = await Customer.findById(req.params.id, "-password");
-  if(!customer) return res.status(400).send(`No customer with this id ${req.params.id}`);
+  if(!customer) return res.status(404).send({message: `No customer with this id ${req.params.id}`});
   res.send(customer);  
 });
 
