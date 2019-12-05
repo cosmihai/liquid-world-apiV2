@@ -34,8 +34,8 @@ describe("/api/bartenders", () => {
     ];
   });
   afterEach(async () => {
-    server.close();
     await Bartender.deleteMany({});
+    server.close();
   });
 
   describe("GET /", () => {

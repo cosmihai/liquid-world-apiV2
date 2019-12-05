@@ -20,7 +20,7 @@ router.get('/me', auth, async (req, res) => {
   const id = req.user._id;
   //get the 'me' user
   const me = await Customer.findById(id, "-password");
-  if(!me) return res.status(400).send(`Invalid token provided`);
+  if(!me) return res.status(400).send({message: `Invalid token provided`});
   res.send(me);
 });
 
@@ -36,12 +36,12 @@ router.get('/:id', validateId, async (req, res) => {
 router.post('/', async (req, res) => {
   //search for errors in the body of the request
   const error = validateCustomer(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //check if password exist in the body of the request
-  if(!req.body.password) return res.status(400).send('"Password" is required!');
+  if(!req.body.password) return res.status(400).send({message: '"Password" is required!'});
   // check if the email is available
   const exist = await Customer.findOne({email: req.body.email});
-  if(exist) return res.status(400).send(`"${exist.email}" already in use!`);
+  if(exist) return res.status(400).send({message: `"${exist.email}" already in use!`});
   //encrypt password
   const hash = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, hash);
@@ -58,10 +58,10 @@ router.put('/me', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
   //prevent password to be change
-  if(req.body.password) return res.status(400).send('"Passowrd" is not allowed!');
+  if(req.body.password) return res.status(400).send({message: '"Password" is not allowed!'});
   //check for error in the body of the request
   const error = validateCustomer(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //update the customer
   const me = await Customer.findByIdAndUpdate(id, req.body, {new: true});
   if(!me) return res.status(400).send(`Invalid token provided`);
@@ -74,17 +74,17 @@ router.put('/me/change-password', auth, async (req, res) => {
   const id = req.user._id;
   //vaidate password 
   const error = validatePassword(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //check for the customer with this id
   const me = await Customer.findById(id);
-  if(!me) return res.status(400).send(`Invalid token provided`);
+  if(!me) return res.status(400).send({message: `Invalid token provided`});
   //prevent establish the same password as before
-  if(await bcrypt.compare(req.body.password, me.password)) return res.status(400).send('Can not set the same password');
+  if(await bcrypt.compare(req.body.password, me.password)) return res.status(400).send({message: 'Can not set the same password'});
   //encrypt and set the new password
   const hash = await bcrypt.genSalt(10);
   me.password = await bcrypt.hash(req.body.password, hash);
   await me.save();
-  res.send(`Password changed for "${me.username}" user.`);
+  res.send({message: `Password changed for "${me.username}" user.`});
 });
 
 //set the avatar
@@ -93,29 +93,27 @@ router.put('/me/set-avatar', auth, async (req, res) => {
   const id = req.user._id;  
   //validate avatar
   const error = validateImage(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //set the avatar
   const me = await Customer.updateOne({_id: id}, { $set: { avatar: req.body } });
-  if(!me.n) return res.status(400).send(`Invalid token provided`);
+  if(!me.n) return res.status(400).send({message: `Invalid token provided`});
   res.send(me);
 });
 
 //add restaurant to favorite list
-router.put('/me/add-fav_restaurants/:restaurantId', auth, async (req, res) => {
+router.put('/me/add-fav_restaurants/:id', auth, validateId, async (req, res) => {
   //set the 'me' user
   const me = await Customer.findById(req.user._id);
-  if(!me) return res.status(400).send(`Invalid token provided`);
-  //validate restaurant id
-  if(!validateId(req.params.restaurantId)) return res.status(400).send('Invalid restaurant id');
+  if(!me) return res.status(400).send({message: `Invalid token provided`});
   //get the restaurant with the provided id
-  const restaurant = await Restaurant.findById(req.params.restaurantId);
-  if(!restaurant) return res.status(400).send(`No restaurant with this id: ${req.params.restaurantId }`);
+  const restaurant = await Restaurant.findById(req.params.id);
+  if(!restaurant) return res.status(400).send({message: `No restaurant with this id: ${req.params.id }`});
   //check if already is in favorite
-  const exist = me.favRestaurants.find(rest => rest._id == req.params.restaurantId);
-  if(exist) return res.status(400).send('This restaurant already exist in the list');
+  const exist = me.favRestaurants.find(rest => rest._id == req.params.id);
+  if(exist) return res.status(400).send({message: 'This restaurant already exist in the list'});
   //set favorite restaurant
   const favRestaurant = {
-    _id: req.params.restaurantId,
+    _id: req.params.id,
     name: restaurant.name,
     city: restaurant.address.city
   };
