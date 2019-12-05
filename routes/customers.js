@@ -4,7 +4,7 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const { Bartender } = require('../models/bartender');
 const { Restaurant } = require('../models/restaurant');
-const { Customer, validateCustomer, validateId, validatePassword, validateImage } = require('../models/customer');
+const { Customer, validateCustomer, validatePassword, validateImage } = require('../models/customer');
 const express = require('express');
 const router = express.Router();
 
