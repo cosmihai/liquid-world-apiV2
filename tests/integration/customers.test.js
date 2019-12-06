@@ -518,4 +518,22 @@ describe("/api/customers", () => {
       expect(updatedCustomer.favBartenders.length).toBe(0);
     });
   });
+  describe("DELETE /me", () => {
+    beforeEach(async () => {
+      customer = await Customer.create(customersList[0]);
+      token = customer.generateToken();
+    });
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).delete('/api/customers/me');
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('Access denied');
+    }); 
+    it("Should return 200 if customer user was successfully deleted from db", async () => {
+      const res = await request(server)
+      .delete('/api/customers/me')
+      .set('x-auth-token', token);
+      expect(res.status).toBe(200);
+      expect(res.body.message).toMatch('"customer1" user was successfully removed');
+    }); 
+  });
 });

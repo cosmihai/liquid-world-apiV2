@@ -180,6 +180,6 @@ router.delete('/me', auth, async (req, res) => {
   const id = req.user._id;
   //remove customer user from DB
   const me = await Customer.findByIdAndDelete(id);
-  res.send(`"${me.username}" user was successfully removed from DB`)
+  res.send({message: `"${me.username}" user was successfully removed from DB`})
 });
 module.exports = router;
