@@ -52,7 +52,6 @@ const customerSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 255,
         trim: true,
-        lowercase: true
       }
     })
   }],
@@ -63,7 +62,6 @@ const customerSchema = new mongoose.Schema({
         required: true,
         minlength: 2,
         maxlength: 255,
-        lowercase: true,
         trim: true
       },
       raiting: {

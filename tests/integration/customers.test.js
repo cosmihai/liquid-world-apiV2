@@ -413,4 +413,109 @@ describe("/api/customers", () => {
       expect(updatedCustomer.favRestaurants.length).toBe(0);
     });
   });
+  describe("PUT /me/add-fav_bartenders/:id", () => {
+    beforeEach( async () => {
+      customer = await Customer.create(customersList[0]);
+      token = customer.generateToken();
+      bartender = await Bartender.create({
+        username: "bartenderTest1",
+        email: "bartenderTest1@gmail.com",
+        password: bcrypt.hashSync('123456', bcrypt.genSaltSync(10)),
+        personalInfo: {
+          firstName: "firstNameTest1",
+          lastName: "lastNameTest1",
+          phone: "654321",
+          description: "this is test description for bartenderTest1"
+        }
+      });
+    });
+    function exec() {
+      return request(server)
+      .put('/api/customers/me/add-fav_bartenders/' + bartender._id)
+      .set('x-auth-token', token)
+    };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).put('/api/customers/me/add-fav_bartenders/' + bartender._id);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('Access denied');
+    }); 
+    it("Should return 404 if invalid bartender id is sent", async () => {
+      const res = await request(server)
+      .put('/api/customers/me/add-fav_bartenders/1')
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('Invalid id')
+    });
+    it("Should return 404 if no bartender is found with the provided id", async () => {
+      const res = await request(server)
+      .put('/api/customers/me/add-fav_bartenders/' + new mongoose.Types.ObjectId())
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('No bartender with this id')
+    });
+    it("Should return 400 if the bartender is already in the fav list", async () => {
+      await exec();
+      const res = await exec();
+      expect(res.status).toBe(400)
+      expect(res.body.message).toMatch('bartender already exist')
+    });
+    it("Should return 200 if bartender is added to the fav list", async () => {
+      const res = await exec();
+      expect(res.status).toBe(200);
+      const updatedCustomer = await Customer.findById(customer._id);
+      expect(updatedCustomer.favBartenders.length).toBe(1);
+      expect(updatedCustomer.favBartenders[0].username).toMatch('bartenderTest1');
+    });
+  });
+  describe("DELETE /me/remove-fav_bartenders/:id", () => {
+    beforeEach( async () => {
+      customer = await Customer.create(customersList[0]);
+      token = customer.generateToken();
+      bartender = await Bartender.create({
+        username: "bartenderTest1",
+        email: "bartenderTest1@gmail.com",
+        password: bcrypt.hashSync('123456', bcrypt.genSaltSync(10)),
+        personalInfo: {
+          firstName: "firstNameTest1",
+          lastName: "lastNameTest1",
+          phone: "654321",
+          description: "this is test description for bartenderTest1"
+        }
+      });
+      await request(server)
+      .put('/api/customers/me/add-fav_bartenders/' + bartender._id)
+      .set('x-auth-token', token)
+    });
+    function exec() {
+      return request(server)
+      .delete('/api/customers/me/remove-fav_bartenders/' + bartender._id)
+      .set('x-auth-token', token)
+    };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).delete('/api/customers/me/remove-fav_bartenders/' + bartender._id);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('Access denied');
+    }); 
+    it("Should return 404 if invalid bartender id is sent", async () => {
+      const res = await request(server)
+      .delete('/api/customers/me/remove-fav_bartenders/1')
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('Invalid id')
+    });
+    it("Should return 404 if no bartender is found with the provided id in the fav list", async () => {
+      const res = await request(server)
+      .delete('/api/customers/me/remove-fav_bartenders/' + new mongoose.Types.ObjectId())
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('bartender is not in the list')
+    });
+    it("Should return 200 if bartender is removed from the fav list", async () => {
+      const res = await exec();
+      expect(res.status).toBe(200);
+      expect(res.body.removed).toHaveProperty('username', 'bartenderTest1')
+      const updatedCustomer = await Customer.findById(customer._id);
+      expect(updatedCustomer.favBartenders.length).toBe(0);
+    });
+  });
 });
