@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const { Cocktail } = require('../../models/cocktail');
 const { Bartender } = require('../../models/bartender');
 const { Customer } = require('../../models/customer');
 const { Restaurant } = require('../../models/restaurant');
@@ -8,7 +7,6 @@ const request = require('supertest');
 let server;
 
 describe("/api/customers", () => {
-  let cocktail;
   let bartender;
   let restaurant;
   let customersList;
@@ -33,7 +31,6 @@ describe("/api/customers", () => {
   afterEach(async () => {
     await Customer.deleteMany();
     await Bartender.deleteMany();
-    await Cocktail.deleteMany();
     await Restaurant.deleteMany();
     server.close();
   });

@@ -1,9 +1,10 @@
+const validateId = require('../middlewares/validateId');
 const auth = require('../middlewares/auth');
 const Fawn = require('fawn');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const { Customer } = require('../models/customer');
-const { Restaurant, validateRestaurant, validateId, validatePassword, validateImage } = require('../models/restaurant');
+const { Restaurant, validateRestaurant, validatePassword, validateImage } = require('../models/restaurant');
 const express = require('express');
 const router = express.Router();
 
@@ -22,20 +23,17 @@ router.get('/me', auth, async (req, res) => {
 });
 
 //get one restaurant profile
-router.get('/:id', async (req, res) => {
-  //check if id is valid
-  const { valid, message } = validateId(req.params.id);
-  if(!valid) return res.status(400).send(message);
+router.get('/:id', validateId, async (req, res) => {
   //search for the restaurant by id
   let restaurant = await Restaurant.findById(req.params.id, "-password").populate('comments');
-  if(!restaurant) return res.status(400).send(`No restaurant with this id: ${req.params.id}`);
+  if(!restaurant) return res.status(404).send({message: `No restaurant with this id: ${req.params.id}`});
   res.send(restaurant);
 });
 
 //rate one restaurant
 router.put('/:id/rate', auth, async (req, res) => {
   //authorize
-  if(req.user.role === 'restaurant') return res.status(401).send('Unauthorized');
+  if(req.user.role !== 'customer') return res.status(401).send({message: 'Only customer users can rate restaurants'});
   //get the customer
   const customer = await Customer.findById(req.user._id);
   if(!customer) return res.status(400).send('No customer found with this id!');

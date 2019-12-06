@@ -118,10 +118,6 @@ function validateCustomer(customer) {
   return error;
 };
 
-function validateId(id) {
-  return mongoose.Types.ObjectId.isValid(id);
-};
-
 function validatePassword(pass) {
   const passSchema = Joi.object({
     password: Joi.string().min(6).max(255).required()
@@ -143,6 +139,5 @@ const Customer = mongoose.model('Customer', customerSchema);
 
 module.exports.Customer = Customer;
 module.exports.validateCustomer = validateCustomer;
-module.exports.validateId = validateId;
 module.exports.validatePassword = validatePassword;
 module.exports.validateImage = validateImage;

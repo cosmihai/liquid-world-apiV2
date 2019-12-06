@@ -32,7 +32,6 @@ const restaurantSchema = new mongoose.Schema({
         required: true,
         minlength: 6,
         maxlength: 255,
-        lowercase: true,
         trim: true
       },
       number: {
@@ -47,7 +46,6 @@ const restaurantSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 255,
         trim: true,
-        lowercase: true
       },
       country: {
         type: String,
@@ -55,7 +53,6 @@ const restaurantSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 255,
         trim: true,
-        lowercase: true
       }
     },
     required: true
@@ -140,18 +137,6 @@ function validateRestaurant(restaurant) {
   return error;
 };
 
-function validateId(...id) {
-  let result = {valid: true, message: ''};
-  for(let i = 0; i < id.length; i ++) {
-    if(!mongoose.Types.ObjectId.isValid(id[i])) {
-      result.valid = false;
-      result.message = `The id ${id[i]} is not valid`;
-      return result
-    }
-  };
-  return result;
-};
-
 function validatePassword(pass) {
   const passSchema = Joi.object({
     password: Joi.string().min(6).max(255).required()
@@ -172,6 +157,5 @@ function validateImage(img) {
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 module.exports.Restaurant = Restaurant;
 module.exports.validateRestaurant = validateRestaurant;
-module.exports.validateId = validateId;
 module.exports.validatePassword = validatePassword;
 module.exports.validateImage = validateImage;
