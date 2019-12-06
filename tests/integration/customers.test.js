@@ -325,12 +325,92 @@ describe("/api/customers", () => {
       .put('/api/customers/me/add-fav_restaurants/' + restaurant._id)
       .set('x-auth-token', token)
     };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).put('/api/customers/me/add-fav_restaurants/' + restaurant._id);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('Access denied');
+    }); 
+    it("Should return 404 if invalid restaurant id is sent", async () => {
+      const res = await request(server)
+      .put('/api/customers/me/add-fav_restaurants/1')
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('Invalid id')
+    });
+    it("Should return 404 if no restaurant is found with the provided id", async () => {
+      const res = await request(server)
+      .put('/api/customers/me/add-fav_restaurants/' + new mongoose.Types.ObjectId())
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('No restaurant with this id')
+    });
+    it("Should return 400 if the restaurant is already in the fav list", async () => {
+      await exec();
+      const res = await exec();
+      expect(res.status).toBe(400)
+      expect(res.body.message).toMatch('restaurant already exist')
+    });
     it("Should return 200 if restaurant is added to the fav list", async () => {
       const res = await exec();
       expect(res.status).toBe(200);
       const updatedCustomer = await Customer.findById(customer._id);
       expect(updatedCustomer.favRestaurants.length).toBe(1);
       expect(updatedCustomer.favRestaurants[0].name).toMatch('restaurantTest1');
+    });
+  });
+  describe("DELETE /me/remove-fav_restaurants/:id", () => {
+    beforeEach( async () => {
+      customer = await Customer.create(customersList[0]);
+      token = customer.generateToken();
+      restaurant = await Restaurant.create({
+        name: 'restaurantTest1',
+        email: 'restaurantTest1@gmail.com',
+        password: bcrypt.hashSync('123456', bcrypt.genSaltSync(10)),
+        address: {
+          street: "main st.",
+          number: '00',
+          city: 'Barcelona',
+          country: 'Country'
+        },
+        phone: '000000',
+        description: 'test description for restaurantTest1',
+        capacity: 100,
+        cuisine: 'test cuisine'
+      });
+      await request(server)
+      .put('/api/customers/me/add-fav_restaurants/' + restaurant._id)
+      .set('x-auth-token', token)
+    });
+    function exec() {
+      return request(server)
+      .delete('/api/customers/me/remove-fav_restaurants/' + restaurant._id)
+      .set('x-auth-token', token)
+    };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).delete('/api/customers/me/remove-fav_restaurants/' + restaurant._id);
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('Access denied');
+    }); 
+    it("Should return 404 if invalid restaurant id is sent", async () => {
+      const res = await request(server)
+      .delete('/api/customers/me/remove-fav_restaurants/1')
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('Invalid id')
+    });
+    it("Should return 404 if no restaurant is found with the provided id in the fav list", async () => {
+      const res = await request(server)
+      .delete('/api/customers/me/remove-fav_restaurants/' + new mongoose.Types.ObjectId())
+      .set('x-auth-token', token);
+      expect(res.status).toBe(404)
+      expect(res.body.message).toMatch('restaurant is not in the list')
+    });
+    it("Should return 200 if restaurant is removed from the fav list", async () => {
+      const res = await exec();
+      expect(res.status).toBe(200);
+      expect(res.body.removed).toHaveProperty('name', 'restaurantTest1')
+      const updatedCustomer = await Customer.findById(customer._id);
+      expect(updatedCustomer.favRestaurants.length).toBe(0);
     });
   });
 });

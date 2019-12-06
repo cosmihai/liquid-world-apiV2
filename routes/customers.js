@@ -107,7 +107,7 @@ router.put('/me/add-fav_restaurants/:id', auth, validateId, async (req, res) => 
   if(!me) return res.status(400).send({message: `Invalid token provided`});
   //get the restaurant with the provided id
   const restaurant = await Restaurant.findById(req.params.id);
-  if(!restaurant) return res.status(400).send({message: `No restaurant with this id: ${req.params.id }`});
+  if(!restaurant) return res.status(404).send({message: `No restaurant with this id: ${req.params.id }`});
   //check if already is in favorite
   const exist = me.favRestaurants.find(rest => rest._id == req.params.id);
   if(exist) return res.status(400).send({message: 'This restaurant already exist in the list'});
@@ -124,17 +124,15 @@ router.put('/me/add-fav_restaurants/:id', auth, validateId, async (req, res) => 
 });
 
 //remove restaurant from the favorite list
-router.delete('/me/remove-fav_restaurants/:restaurantId', auth, async (req, res) => {
+router.delete('/me/remove-fav_restaurants/:id', auth, validateId, async (req, res) => {
   //set the 'me' user
   const me = await Customer.findById(req.user._id);
-  if(!me) return res.status(400).send(`Invalid token provided`);
-  //validate restaurant id
-  if(!validateId(req.params.restaurantId)) return res.status(400).send('Invalid restaurant id');
+  if(!me) return res.status(400).send({message: `Invalid token provided`});
   //get the restaurant from the favorite list
-  const exist = me.favRestaurants.find(rest => rest._id == req.params.restaurantId);
-  if(!exist) return res.status(400).send('This restaurant is not in the list');
+  const exist = me.favRestaurants.find(rest => rest._id == req.params.id);
+  if(!exist) return res.status(404).send({message: 'This restaurant is not in the list'});
   //remove from the favorite restaurant list
-  me.favRestaurants = me.favRestaurants.filter(restaurant => restaurant._id != req.params.restaurantId);
+  me.favRestaurants = me.favRestaurants.filter(restaurant => restaurant._id != req.params.id);
   await me.save();
   res.send({removed: exist});
 });
