@@ -31,18 +31,15 @@ router.get('/:id', validateId, async (req, res) => {
 });
 
 //rate one restaurant
-router.put('/:id/rate', auth, async (req, res) => {
+router.put('/:id/rate', auth, validateId, async (req, res) => {
   //authorize
   if(req.user.role !== 'customer') return res.status(401).send({message: 'Only customer users can rate restaurants'});
   //get the customer
   const customer = await Customer.findById(req.user._id);
-  if(!customer) return res.status(400).send('No customer found with this id!');
-  //check if id is valid
-  const { valid, message } = validateId(req.params.id);
-  if(!valid) return res.status(400).send(message);
+  if(!customer) return res.status(400).send({message: 'No customer found with this id!'});
   //check for the rate object in the body of the request
   if(!req.body.rate || req.body.rate < 1 || req.body.rate > 5) {
-    return res.status(400).send('Rate must be a number between 1 and 5!');
+    return res.status(400).send({message: 'Rate must be a number between 1 and 5!'});
   };
   //check if the customer already rated this restaurant
   let previousRate;
@@ -84,7 +81,9 @@ router.put('/:id/rate', auth, async (req, res) => {
       }}
     })
     .run()
-    res.send({votes: votes, stars: stars});
+    .then(() => {
+      res.send({votes: votes, stars: stars});
+    })
   }
   catch(ex) {
     res.status(500).send('Exception: \n' + ex);
