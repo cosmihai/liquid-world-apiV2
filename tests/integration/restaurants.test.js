@@ -295,5 +295,150 @@ describe("/api/restaurants", () => {
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch('"number" is required');
     }); 
+    it("Should return 400 if city is shorter than 2", async () => {
+      restaurantsList[0].address.city = 'a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"city" length must be at least 2');
+    });
+    it("Should return 400 if city is larger than 255", async () => {
+      restaurantsList[0].address.city = new Array(257).join('a');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"city" length must be less than or equal to 255');
+    });
+    it("Should return 400 if city is missing", async () => {
+      restaurantsList[0].address.city = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"city" is not allowed to be empty');
+    }); 
+    it("Should return 400 if country is shorter than 2", async () => {
+      restaurantsList[0].address.country = 'a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"country" length must be at least 2');
+    });
+    it("Should return 400 if country is larger than 255", async () => {
+      restaurantsList[0].address.country = new Array(257).join('a');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"country" length must be less than or equal to 255');
+    });
+    it("Should return 400 if country is missing", async () => {
+      restaurantsList[0].address.country = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"country" is not allowed to be empty');
+    }); 
+    it("Should return 400 if phone is shorter than 6", async () => {
+      restaurantsList[0].phone = '1';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"phone" length must be at least 6');
+    });
+    it("Should return 400 if phone is larger than 50", async () => {
+      restaurantsList[0].phone = new Array(57).join('1');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"phone" length must be less than or equal to 50');
+    });
+    it("Should return 400 if phone is invalid", async () => {
+      restaurantsList[0].phone = '12345a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('fails to match the required pattern');
+    });
+    it("Should return 400 if phone is missing", async () => {
+      restaurantsList[0].phone = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"phone" is not allowed to be empty');
+    }); 
+    it("Should return 400 if capacity is missing", async () => {
+      restaurantsList[0].capacity = undefined;
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"capacity" is required');
+    }); 
+    it("Should return 400 if capacity is a negative number", async () => {
+      restaurantsList[0].capacity = -1;
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"capacity" must be larger than or equal to 0');
+    }); 
+    it("Should return 400 if cuisine is shorter than 4", async () => {
+      restaurantsList[0].cuisine = 'abc';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"cuisine" length must be at least 4');
+    });
+    it("Should return 400 if cuisine is larger than 255", async () => {
+      restaurantsList[0].cuisine = new Array(257).join('a');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"cuisine" length must be less than or equal to 255');
+    });
+    it("Should return 400 if cuisine is missing", async () => {
+      restaurantsList[0].cuisine = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"cuisine" is not allowed to be empty');
+    }); 
+    it("Should return 400 if email is already in use", async () => {
+      await Restaurant.create(restaurantsList[1]);
+      restaurantsList[0].email = restaurantsList[1].email;
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('already in use')
+    });
+    it("Should return 200 if valid restaurant object is sent", async () => {
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('name', restaurantsList[0].name)
+    });
+  });
+  describe("PUT /me", () => {
+    beforeEach(async () => {
+      restaurant = await Restaurant.create(restaurantsList[0]);
+      token = restaurant.generateToken();
+    });
+    function exec(payload) {
+      return request(server)
+      .put('/api/restaurants/me')
+      .set('x-auth-token', token)
+      .send(payload);
+    };
+    it("Should return 401 if no token is provided", async () => {
+      const res = await request(server).get('/api/restaurants/me');
+      expect(res.status).toBe(401);
+      expect(res.body.message).toMatch('No token provided')
+    });
+    it("Should return 400 if bad token is provided", async () => {
+      const res = await request(server)
+      .get('/api/restaurants/me')
+      .set('x-auth-token', 'a');
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('Invalid token provided')
+    });
+    it("Should return 400 if invalid restaurant object is sent", async () => {
+      restaurantsList[0].password = undefined;
+      restaurantsList[0].name = 'a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400)
+      expect(res.body.message).toMatch('must be at least 2')
+    });
+    it("Should return 400 if the sent object contain password ", async () => {
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400)
+      expect(res.body.message).toMatch('"Password" is not allowed')
+    });
+    it("Should return 200 if valid updated restaurant object is sent", async () => {
+      restaurantsList[0].password = undefined;
+      restaurantsList[0].name = 'updated name';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(200)
+      expect(res.body).toHaveProperty('name', 'updated name')
+    });
   });
 });

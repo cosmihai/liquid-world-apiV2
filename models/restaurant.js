@@ -128,7 +128,7 @@ function validateRestaurant(restaurant) {
     email: Joi.string().min(6).max(255).email().required(),
     password: Joi.string().min(6).max(255),
     address: addressSchema.required(),
-    phone: Joi.string().min(6).required().regex(/^[0-9]+$/),
+    phone: Joi.string().min(6).max(50).required().regex(/^[0-9]+$/),
     description: Joi.string(),
     capacity: Joi.number().min(0).required(),
     cuisine: Joi.string().min(4).max(255).required()
