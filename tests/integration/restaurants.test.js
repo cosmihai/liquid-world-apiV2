@@ -187,4 +187,113 @@ describe("/api/restaurants", () => {
       expect(res.body).toHaveProperty('stars', 2.5);
     });
   });
+  describe("POST /", () => {
+    function exec(payload) {
+      return request(server)
+      .post('/api/restaurants')
+      .send(payload)
+    };
+    it("Should return 400 if name is shorter than 2", async () => {
+      restaurantsList[0].name = 'a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"name" length must be at least 2');
+    });
+    it("Should return 400 if name is larger than 255", async () => {
+      restaurantsList[0].name = new Array(257).join('a');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"name" length must be less than or equal to 255');
+    });
+    it("Should return 400 if name is missing", async () => {
+      restaurantsList[0].name = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"name" is not allowed to be empty');
+    }); 
+    it("Should return 400 if email is shorter than 6", async () => {
+      restaurantsList[0].email = 'a@a.a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"email" length must be at least 6');
+    });
+    it("Should return 400 if email is larger than 255", async () => {
+      restaurantsList[0].email = new Array(253).join('a') + '@a.a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"email" length must be less than or equal to 255');
+    });
+    it("Should return 400 if email is missing", async () => {
+      restaurantsList[0].email = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"email" is not allowed to be empty');
+    }); 
+    it("Should return 400 if email is not valid", async () => {
+      restaurantsList[0].email = 'invalid_email';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"email" must be a valid email');
+    }); 
+    it("Should return 400 if password is shorter than 6", async () => {
+      restaurantsList[0].password = 'a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"password" length must be at least 6');
+    });
+    it("Should return 400 if password is larger than 255", async () => {
+      restaurantsList[0].password = new Array(257).join('a');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"password" length must be less than or equal to 255');
+    });
+    it("Should return 400 if password is missing", async () => {
+      restaurantsList[0].password = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"Password" is required');
+    }); 
+    it("Should return 400 if address is missing", async () => {
+      restaurantsList[0].address = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"address" must be an object');
+    }); 
+    it("Should return 400 if street is shorter than 2", async () => {
+      restaurantsList[0].address.street = 'a';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"street" length must be at least 2');
+    });
+    it("Should return 400 if street is larger than 255", async () => {
+      restaurantsList[0].address.street = new Array(257).join('a');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"street" length must be less than or equal to 255');
+    });
+    it("Should return 400 if street is missing", async () => {
+      restaurantsList[0].address.street = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"street" is not allowed to be empty');
+    }); 
+    it("Should return 400 if street number is shorter than 1", async () => {
+      restaurantsList[0].address.number = '';
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"number" is not allowed to be empty');
+    });
+    it("Should return 400 if street number is larger than 255", async () => {
+      restaurantsList[0].address.number = new Array(257).join('1');
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"number" length must be less than or equal to 255');
+    });
+    it("Should return 400 if street number is missing", async () => {
+      restaurantsList[0].address.number = undefined;
+      const res = await exec(restaurantsList[0]);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch('"number" is required');
+    }); 
+  });
 });

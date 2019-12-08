@@ -93,13 +93,13 @@ router.put('/:id/rate', auth, validateId, async (req, res) => {
 //create a restaurant profile
 router.post('/', async (req, res) => {
   //check if password exist in the body of the request
-  if(!req.body.password) res.status(400).send('"Password" is required!');
+  if(!req.body.password) res.status(400).send({message: '"Password" is required!'});
   //search for errors in the body of the request
   const error = validateRestaurant(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   // check if the email is available
   const exist = await Restaurant.findOne({email: req.body.email});
-  if(exist) return res.status(400).send(`"${exist.email}" already in use!`);
+  if(exist) return res.status(400).send({message: `"${exist.email}" already in use!`});
   //encrypt password
   const hash = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, hash);
