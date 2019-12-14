@@ -93,7 +93,7 @@ router.put('/:id/rate', auth, validateId, async (req, res) => {
 //create a restaurant profile
 router.post('/', async (req, res) => {
   //check if password exist in the body of the request
-  if(!req.body.password) res.status(400).send({message: '"Password" is required!'});
+  if(!req.body.password) return res.status(400).send({message: '"Password" is required!'});
   //search for errors in the body of the request
   const error = validateRestaurant(req.body);
   if(error) return res.status(400).send(error.details[0]);
@@ -132,17 +132,17 @@ router.put('/me/change-password', auth, async (req, res) => {
   const id = req.user._id;
   //vaidate password 
   const error = validatePassword(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //check for the restaurant with this id
   const me = await Restaurant.findById(id);
   if(!me) return res.status(400).send(`Invalid token provided`);
   //prevent establish the same password as before
-  if(await bcrypt.compare(req.body.password, me.password)) return res.status(400).send('Can not set the same password');
+  if(await bcrypt.compare(req.body.password, me.password)) return res.status(400).send({message: 'Can not set the same password'});
   //encrypt and set the new password
   const hash = await bcrypt.genSalt(10);
   me.password = await bcrypt.hash(req.body.password, hash);
   await me.save();
-  res.send(`Password changed for "${me.name}" user.`);
+  res.send({message: `Password changed for "${me.name}" user.`});
 });
 
 //add one photo to the restaurant gallery
@@ -151,25 +151,22 @@ router.put('/me/add-photo', auth, async (req, res) => {
   const id = req.user._id;
   //check the image object
   const error = validateImage(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //check for the restaurant with this id and push the new image
   const me = await Restaurant.updateOne({_id: id}, {$push: {images: req.body}});
-  if(!me.n) return res.status(400).send(`Invalid token provided`);
+  if(!me.n) return res.status(400).send({message: `Invalid token provided`});
   res.send(me);
 });
 
 //remove one photo from the restaurant gallery
-router.delete('/me/remove-photo/:photo_id', auth, async (req, res) => {
+router.delete('/me/remove-photo/:id', auth, validateId, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
-  //check if photo id is valid
-  const { valid, message } = validateId(req.params.photo_id);
-  if(!valid) return res.status(400).send(message);
   //remove image from the array
-  const me = await Restaurant.updateOne({_id: id}, {$pull: {images: {_id: req.params.photo_id}}});
-  if(!me.n) return res.status(400).send(`Invalid token provided`);
-  if(!me.nModified) return res.status(400).send(`No image with this id: ${req.params.photo_id}`);
-  res.send(me)
+  const me = await Restaurant.updateOne({_id: id}, {$pull: {images: {_id: req.params.id}}});
+  if(!me.n) return res.status(400).send({message: `Invalid token provided`});
+  if(!me.nModified) return res.status(404).send({message: `No image with this id: ${req.params.id}`});
+  res.send(me);
 });
 
 //remove the restaurant profile
@@ -178,7 +175,7 @@ router.delete('/me', auth, async (req, res) => {
   const id = req.user._id;
   //remove restaurant user from DB
   const me = await Restaurant.findByIdAndDelete(id);
-  res.send(`The "${me.name}" user was successfully removed from DB`)
+  res.send({message: `The "${me.name}" user was successfully removed from DB`})
 });
 
 module.exports = router;

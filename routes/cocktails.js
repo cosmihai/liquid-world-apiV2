@@ -70,7 +70,7 @@ router.put('/:id', auth, validateId, async (req, res) => {
   const error = validateCocktail(req.body);
   if(error) return res.status(400).send(error.details[0]);
   //save the changes
-  const result = await cocktail.update(req.body);
+  const result = await cocktail.updateOne(req.body);
   res.send(result);
 });
 
@@ -85,7 +85,7 @@ router.put('/:id/set-image', auth, validateId, async (req, res) => {
   const error = validateImage(req.body);
   if(error) return res.status(400).send(error.details[0]);
   //save the changes
-  const result = await cocktail.update({ image: req.body });
+  const result = await cocktail.updateOne({ image: req.body });
   res.send(result);
 });
 
