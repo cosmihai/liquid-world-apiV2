@@ -1,8 +1,9 @@
+const validateId = require('../middlewares/validateId');
 const auth = require('../middlewares/auth');
 const Fawn = require('fawn');
 const { Restaurant } = require('../models/restaurant');
 const { Customer } = require('../models/customer');
-const { Comment, validateComment, validateId } = require('../models/comment');
+const { Comment, validateComment } = require('../models/comment');
 const express = require('express');
 const router = express.Router();
 
@@ -14,27 +15,26 @@ router.get('/', async (req, res) => {
 });
 
 //list one comments
-router.get('/:id', async (req, res) => {
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+router.get('/:id', validateId, async (req, res) => {
   const comment = await Comment.findById(req.params.id);
-  if(!comment) return res.status(400).send(`No comment with this id ${req.params.id}`);
+  if(!comment) return res.status(404).send({message: `No comment with this id ${req.params.id}`});
   res.send(comment);
 });
 
 //create comment
 router.post('/', auth, async (req, res) => {
   //authorize
-  if(req.user.role != 'customer') return res.status(401).send(`Only customers can add comments`);
+  if(req.user.role != 'customer') return res.status(401).send({message: `Only customers can add comments`});
   //set the customer id
   req.body.customerId = req.user._id
   //validate the body of the request
   const error = validateComment(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //check if restaurant or customer with the specified id
   const restaurant = await Restaurant.findById(req.body.restaurantId);
-  if(!restaurant) return res.status(400).send('No restaurant found with this id!');
+  if(!restaurant) return res.status(404).send({message: 'No restaurant found with this id!'});
   const customer = await Customer.findById(req.body.customerId);
-  if(!customer) return res.status(400).send('No customer found with this id!');
+  if(!customer) return res.status(404).send({message: 'No customer found with this id!'});
   //create the new comment and save it
   const comment = new Comment({
     text: req.body.text,
@@ -48,7 +48,7 @@ router.post('/', auth, async (req, res) => {
       name: restaurant.name,
       city: restaurant.address.city,
       role: restaurant.role
-    },
+    }
   });
   // save the comment and add it to the restaurant list of comments
   try {
@@ -61,7 +61,9 @@ router.post('/', auth, async (req, res) => {
       $push: { comments: comment._id }
     })
     .run()
-    res.send(comment);
+    .then(() => {
+      res.send(comment);
+    })
   }
   catch(ex) {
     res.status(500).send('Exception: \n' + ex);
@@ -69,20 +71,18 @@ router.post('/', auth, async (req, res) => {
 });
 
 //edit comment
-router.put('/:id', auth, async (req, res) => {
-  //check if id is valid
-  if(!validateId) return res.status(400).send(`The id ${req.params.id} is not valid`);
+router.put('/:id', auth, validateId, async (req, res) => {
   //get the comment
   let comment = await Comment.findById(req.params.id);
-  if(!comment) return res.status(400).send('No comment with this id');
+  if(!comment) return res.status(404).send({message: 'No comment with this id'});
   //check the owner and authorize the change
-  if(req.user._id != comment.author._id) res.status(401).send('Unauthorized');
+  if(req.user._id != comment.author._id) return res.status(401).send({message: 'You are not authorized to modify this comment'});
   //set the customer and restaurant id
   req.body.customerId = comment.author._id.toString();
   req.body.restaurantId = comment.recipient._id.toString();
   //validate the body of the request
   const error = validateComment(req.body);
-  if(error) return res.status(400).send(error.details[0].message);
+  if(error) return res.status(400).send(error.details[0]);
   //update the comment
   comment.text = req.body.text;
   await comment.save();
@@ -90,14 +90,12 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 //delete comment
-router.delete('/:id', auth, async (req, res) => {
-  //check if id is valid
-  if(!validateId(req.params.id)) return res.status(400).send(`The id ${req.params.id} is not valid`);
+router.delete('/:id', auth, validateId,async (req, res) => {
   //get the comment
   const comment = await Comment.findById(req.params.id);
-  if(!comment) return res.status(400).send(`No comment with this id ${req.params.id}`);
+  if(!comment) return res.status(404).send({message: `No comment with this id ${req.params.id}`});
   //check the owner and authorize the remove
-  if(req.user._id != comment.author._id) return res.status(401).send('Unauthorized')
+  if(req.user._id != comment.author._id) return res.status(401).send({message: 'You are not authorized to delete this comment'})
   // remove the comment from the DB and from the restaurant's list of comments
   try {
     new Fawn.Task()
@@ -109,7 +107,9 @@ router.delete('/:id', auth, async (req, res) => {
       $pull: { comments: comment._id }
     })
     .run()
-    res.send(comment);
+    .then(() => {
+      res.send({message: 'Successfully deleted', deleted: comment});
+    });
   }
   catch(ex){
     res.status(500).send('Exception: \n' + ex);

@@ -51,7 +51,7 @@ const commentSchema = new mongoose.Schema({
 
 function validateComment(comment) {
   const schema = Joi.object({
-    text: Joi.string().required().min(10),
+    text: Joi.string().min(10).required(),
     customerId: Joi.objectId().required(),
     restaurantId: Joi.objectId().required()
   });
@@ -59,12 +59,7 @@ function validateComment(comment) {
   return error;
 };
 
-function validateId(id) {
-  return mongoose.Types.ObjectId.isValid(id);
-};
-
 const Comment = mongoose.model('Comment', commentSchema);
 
 module.exports.Comment = Comment;
 module.exports.validateComment = validateComment;
-module.exports.validateId = validateId;

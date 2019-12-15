@@ -50,9 +50,9 @@ describe("/api/restaurants", () => {
     ];
   });
   afterEach(async () => {
-    await Customer.deleteMany();
-    await Restaurant.deleteMany();
-    await Bartender.deleteMany();
+    await Customer.deleteMany({});
+    await Restaurant.deleteMany({});
+    await Bartender.deleteMany({});
     server.close();
   });
   describe("GET /", () => {

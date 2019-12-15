@@ -29,9 +29,9 @@ describe("/api/customers", () => {
     ]
   });
   afterEach(async () => {
-    await Customer.deleteMany();
-    await Bartender.deleteMany();
-    await Restaurant.deleteMany();
+    await Customer.deleteMany({});
+    await Bartender.deleteMany({});
+    await Restaurant.deleteMany({});
     server.close();
   });
   describe("GET /", () => {
