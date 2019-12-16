@@ -9,15 +9,20 @@
     "dev": "nodemon app.js",
     "test": "jest --watchAll --verbose --maxWorkers=1 --forceExit "
   },
+  "engines": {
+    "node": "10.17.0"
+  },
   "author": "Mihai Costantea",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.6",
+    "compression": "^1.7.4",
     "config": "^3.2.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "fawn": "^2.1.5",
+    "helmet": "^3.21.2",
     "joi": "14.3.1",
     "joi-objectid": "2.0.0",
     "jsonwebtoken": "^8.5.1",

@@ -7,6 +7,7 @@ require('./startup/routes')(app);
 require('./startup/db')();
 require('./startup/config')(app);
 require('./startup/vaidation')();
+require('./startup/prod')(app);
 
 const port = process.env.PORT || 3010;
 const server = app.listen(port, winston.info(`app started on port ${port} ..`));
