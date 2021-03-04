@@ -134,7 +134,7 @@ bartenderSchema.methods.generateToken = function() {
   return jwt.sign({_id: this._id, role: this.role}, config.get('jwtKey'));
 };
 
-function validateBartender(bartender) {
+bartenderSchema.methods.validateBartender = function(bartender) {
   const personalInfoSchema = Joi.object({
     firstName: Joi.string().min(2).max(255).trim().required(),
     lastName: Joi.string().min(2).max(255).trim().required(),
@@ -151,7 +151,7 @@ function validateBartender(bartender) {
   return error;
 };
 
-function validateExpirience(exp) {
+bartenderSchema.methods.validateExpirience = function(exp) {
   const experienceSchema = Joi.object({
     place: Joi.string().min(2).max(255).trim().required(),
     from: Joi.date().required(),
@@ -162,7 +162,7 @@ function validateExpirience(exp) {
   return error;
 };
 
-function validatePassword(pass) {
+bartenderSchema.methods.validatePassword = function(pass) {
   const passSchema = Joi.object({
     password: Joi.string().min(6).max(255).required()
   });
@@ -170,7 +170,7 @@ function validatePassword(pass) {
   return error;
 };
 
-function validateImage(img) {
+bartenderSchema.methods.validateImage = function(img) {
   const imgSchema = Joi.object({
     imgName: Joi.string().required(),
     imgPath: Joi.string().required()
@@ -181,7 +181,3 @@ function validateImage(img) {
 
 const Bartender = mongoose.model('Bartender', bartenderSchema);
 module.exports.Bartender = Bartender;
-module.exports.validateBartender = validateBartender;
-module.exports.validateExpirience = validateExpirience;
-module.exports.validatePassword = validatePassword;
-module.exports.validateImage = validateImage;

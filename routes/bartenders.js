@@ -1,7 +1,7 @@
 const auth = require('../middlewares/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-const { Bartender, validateBartender, validateExpirience, validateImage, validatePassword } = require('../models/bartender');
+const { Bartender } = require('../models/bartender');
 const validateId = require('../middlewares/validateId');
 const express = require('express');
 const router = express.Router();
@@ -32,7 +32,7 @@ router.get('/:id', validateId, async (req, res) => {
 //create bartender
 router.post('/', async (req, res) => {
   //search for errors in the body of the request
-  const error = validateBartender(req.body);
+  const error = new Bartender().validateBartender(req.body);
   if(error) return res.status(400).send(error.details[0]);
   //check if password exist in the body of the request
   if(!req.body.password) res.status(400).send('"Password" is required!');
@@ -57,7 +57,7 @@ router.put('/me', auth, async (req, res) => {
   //prevent password to be changed
   if(req.body.password) return res.status(400).send({message: '"Passowrd" is not allowed!'});
   //search for errors in the body of the request
-  const error = validateBartender(req.body);
+  const error = new Bartender().validateBartender(req.body);
   if(error) return res.status(400).send(error.details[0]);
   // check if the email is available
   const exist = await Bartender.findOne({email: req.body.email});
@@ -73,7 +73,7 @@ router.put('/me/change-password', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
   //validate password
-  const error = validatePassword(req.body);
+  const error = new Bartender().validatePassword(req.body)
   if(error) return res.status(400).send(error.details[0]);
   //check for the bartender with the provided id
   const me = await Bartender.findById(id);
@@ -92,7 +92,7 @@ router.put('/me/set-avatar', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;  
   //validate avatar
-  const error = validateImage(req.body);
+  const error = new Bartender().validateImage(req.body);
   if(error) return res.status(400).send(error.details[0]);
   //set the avatar
   const me = await Bartender.updateOne({_id: id}, { $set: { avatar: req.body } });
@@ -105,7 +105,7 @@ router.put('/me/add-experience', auth, async (req, res) => {
   //set the 'me' user
   const id = req.user._id;
   //check the experience object
-  const error = validateExpirience(req.body);
+  const error = new Bartender().validateExpirience(req.body);
   if(error) return res.status(400).send(error.details[0]);
   //check for the bartender with this id and push the experience object
   const me = await Bartender.updateOne({_id: id}, {$push: {experience: req.body}});
