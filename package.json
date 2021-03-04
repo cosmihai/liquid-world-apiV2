@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --watchAll --verbose --maxWorkers=1 --forceExit "
+    "test": "jest --watchAll --verbose"
   },
   "engines": {
     "node": "10.17.0"
@@ -15,7 +15,7 @@
   "author": "Mihai Costantea",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^4.0.0",
+    "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "config": "^3.2.2",
     "cors": "^2.8.5",
@@ -29,8 +29,7 @@
     "lodash": "^4.17.20",
     "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
-    "winston": "^2.4.0",
-    "winston-mongodb": "3.0.0"
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "jest": "^24.9.0",

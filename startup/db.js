@@ -12,5 +12,6 @@ module.exports = function () {
     useCreateIndex: true,
     useFindAndModify: false
   })
-    .then(() => winston.info(`connected to ${db} ...`));
-}
+    .then(() => winston.info(`connected to ${db} ...`))
+    .catch(err => {throw new Error('DB ERROR: ' + err.message)})
+} 

@@ -1,7 +1,5 @@
 const winston = require('winston');
-const config = require('config');
 require('express-async-errors');
-require('winston-mongodb');
 
 module.exports = function() {
   //handle uncaught exceptions from outside of express context
@@ -27,5 +25,4 @@ module.exports = function() {
   });
   //log errors from inside express context
   winston.add(winston.transports.File, { filename: 'logfile.log' });
-  winston.add(winston.transports.MongoDB, { db: config.get('db')});
 }
