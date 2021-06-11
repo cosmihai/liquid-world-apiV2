@@ -1,5 +1,5 @@
 {
   "appName": "liquid-world-apiV2",
-  "jwtKey": "",
+  "jwtKey": "123",
   "db": "mongodb://localhost/LWApi"
 }
