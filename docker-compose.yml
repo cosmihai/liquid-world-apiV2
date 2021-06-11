@@ -8,15 +8,8 @@ services:
       - '80:3000'
     links: 
       - mongo
-    environment: 
-      - lwa_jwtSecretKey=12345
-      - lwa_db=mongodb://mongo:27017/LWApi
-      - db_test=mongodb://mongo:27017/LWApi_test
-      - PORT=3000
   mongo: 
-    container_name: mongo_db
-    volumes: 
-      - ~/mongo/data:/data/db
+    container_name: mongo
     image: mongo
     ports: 
       - '27017:27017'
