@@ -6,7 +6,6 @@ services:
     build: .
     volumes:
       - ./:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - '80:3030'
     environment: 
