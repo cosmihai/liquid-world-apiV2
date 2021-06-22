@@ -1,4 +1,4 @@
 {
   "jwtKey": "123456",
-  "db": "mongodb://localhost/LW_db_test"
+  "db": "db_tst"
 }

@@ -1,4 +1,4 @@
 {
   "jwtKey": "lwa_jwtSecretKey",
-  "db": "lwa_db"
+  "db": "db"
 }
