@@ -8,7 +8,12 @@ services:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '80:3000'
+      - '80:3030'
+    environment: 
+      - PORT=3030
+      - db=mongodb://mongo:27017/LWA_db
+      - db_tst=mongodb://mongo:27017/LWA_db_tst
+      - lwa_jwtSecretKey=1234567890
     links: 
       - mongo
   mongo: 
