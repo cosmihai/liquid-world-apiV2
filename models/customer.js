@@ -1,5 +1,5 @@
-const config = require('config');
-const jwt = require('jsonwebtoken');
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
@@ -9,7 +9,7 @@ const customerSchema = new mongoose.Schema({
     required: true,
     min: 2,
     max: 255,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
@@ -17,98 +17,109 @@ const customerSchema = new mongoose.Schema({
     minlength: 6,
     maxlength: 255,
     trim: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
     required: true,
     minlength: 6,
-    maxlength: 1024
+    maxlength: 1024,
   },
   avatar: {
     imgName: {
       type: String,
       required: true,
-      default: 'default image'
+      default: "default image",
     },
     imgPath: {
       type: String,
       required: true,
-      default: 'https://images.unsplash.com/photo-1511914678378-2906b1f69dcf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80'
-    }
+      default:
+        "https://images.unsplash.com/photo-1511914678378-2906b1f69dcf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+    },
   },
-  favRestaurants: [{
-    type: new mongoose.Schema({
-      name: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 255,
-        trim: true
-      },
-      city: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 255,
-        trim: true,
-      }
-    })
-  }],
-  favBartenders: [{
-    type: new mongoose.Schema({
-      username: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 255,
-        trim: true
-      },
-      raiting: {
-        type: Number,
-      }
-    })
-  }],
-  favCocktails: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Cocktail'
-  }],
-  comments: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Comment'
-  }],
-  ratedRestaurants: [{
-    type: new mongoose.Schema({
-      restaurantId: {
-        type: String,
-        required: true
-      },
-      restaurantName: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 255,
-        trim: true
-      },
-      rate: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5
-      }
-    })
-  }],
+  favRestaurants: [
+    {
+      type: new mongoose.Schema({
+        name: {
+          type: String,
+          required: true,
+          minlength: 2,
+          maxlength: 255,
+          trim: true,
+        },
+        city: {
+          type: String,
+          required: true,
+          minlength: 2,
+          maxlength: 255,
+          trim: true,
+        },
+      }),
+    },
+  ],
+  favBartenders: [
+    {
+      type: new mongoose.Schema({
+        username: {
+          type: String,
+          required: true,
+          minlength: 2,
+          maxlength: 255,
+          trim: true,
+        },
+        raiting: {
+          type: Number,
+        },
+      }),
+    },
+  ],
+  favCocktails: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Cocktail",
+    },
+  ],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
+  ratedRestaurants: [
+    {
+      type: new mongoose.Schema({
+        restaurantId: {
+          type: String,
+          required: true,
+        },
+        restaurantName: {
+          type: String,
+          required: true,
+          minlength: 2,
+          maxlength: 255,
+          trim: true,
+        },
+        rate: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5,
+        },
+      }),
+    },
+  ],
   role: {
     type: String,
-    default: 'customer'
-  }
+    default: "customer",
+  },
 });
 
-customerSchema.methods.generateToken = function() {
-  return jwt.sign({_id: this._id, role: this.role}, config.get('jwtKey'));
-}
+customerSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this._id, role: this.role }, config.get("jwtKey"));
+};
 
-function validateCustomer(customer) {
+customerSchema.methods.validateCustomer = function (customer) {
   const schema = Joi.object({
     username: Joi.string().min(2).max(255).required(),
     email: Joi.string().min(6).max(255).email().required(),
@@ -118,26 +129,22 @@ function validateCustomer(customer) {
   return error;
 };
 
-function validatePassword(pass) {
+customerSchema.methods.validatePassword = function (pass) {
   const passSchema = Joi.object({
-    password: Joi.string().min(6).max(255).required()
+    password: Joi.string().min(6).max(255).required(),
   });
   const { error } = Joi.validate(pass, passSchema);
   return error;
 };
 
-function validateImage(img) {
+customerSchema.methods.validateImage = function (img) {
   const imgSchema = Joi.object({
     imgName: Joi.string().required(),
-    imgPath: Joi.string().required()
+    imgPath: Joi.string().required(),
   });
   const { error } = Joi.validate(img, imgSchema);
   return error;
 };
 
-const Customer = mongoose.model('Customer', customerSchema);
-
+const Customer = mongoose.model("Customer", customerSchema);
 module.exports.Customer = Customer;
-module.exports.validateCustomer = validateCustomer;
-module.exports.validatePassword = validatePassword;
-module.exports.validateImage = validateImage;
