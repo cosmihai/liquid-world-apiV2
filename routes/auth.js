@@ -1,54 +1,85 @@
-const { Bartender } = require('../models/bartender');
-const { Customer } = require('../models/customer');
-const { Restaurant } = require('../models/restaurant');
-const Joi = require('joi');
-const bcrypt = require('bcrypt');
-const express = require('express');
+const { Bartender } = require("../models/bartender");
+const { Customer } = require("../models/customer");
+const { Restaurant } = require("../models/restaurant");
+const Joi = require("joi");
+const bcrypt = require("bcrypt");
+const express = require("express");
 const router = express.Router();
+const setResponse = require("../helpers/setResponse");
 
-router.post('/restaurants/login', async (req, res) => {
+router.post("/restaurants/login", async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
-  if(error) return res.status(400).send(error.details[0]) ;
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //check for the restaurant user with the given email
-  const restaurant = await Restaurant.findOne({email: req.body.email});
-  if(!restaurant) return res.status(400).send({message: 'Password or email incorrect!'});
+  const restaurant = await Restaurant.findOne({ email: req.body.email });
+  if (!restaurant)
+    return res
+      .status(400)
+      .send(setResponse(false, "Password or email incorrect."));
   //check if password match
-  const matchPassword = await bcrypt.compare(req.body.password, restaurant.password);
-  if(!matchPassword) return res.status(400).send({message: 'Password or email incorrect!'});
+  const matchPassword = await bcrypt.compare(
+    req.body.password,
+    restaurant.password
+  );
+  if (!matchPassword)
+    return res
+      .status(400)
+      .send(setResponse(false, "Password or email incorrect."));
   //generate token and send the response
   const token = restaurant.generateToken();
-  res.send({token: token});
+  res.send(setResponse(token));
 });
 
-router.post('/customers/login', async (req, res) => {
+router.post("/customers/login", async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
-  if(error) return res.status(400).send(error.details[0]) ;
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //check for the customer user with the given email
-  const customer = await Customer.findOne({email: req.body.email});
-  if(!customer) return res.status(400).send({message: 'Password or email incorrect!'});
+  const customer = await Customer.findOne({ email: req.body.email });
+  if (!customer)
+    return res
+      .status(400)
+      .send(setResponse(false, "Password or email incorrect."));
   //check if password match
-  const matchPassword = await bcrypt.compare(req.body.password, customer.password);
-  if(!matchPassword) return res.status(400).send({message: 'Password or email incorrect!'});
+  const matchPassword = await bcrypt.compare(
+    req.body.password,
+    customer.password
+  );
+  if (!matchPassword)
+    return res
+      .status(400)
+      .send(setResponse(false, "Password or email incorrect."));
   //generate token and send the response
   const token = customer.generateToken();
-  res.send({token: token});
+  res.send(setResponse(token));
 });
 
-router.post('/bartenders/login', async (req, res) => {
+router.post("/bartenders/login", async (req, res) => {
   //validate the body of the request
   const error = validateInput(req.body);
-  if(error) return res.status(400).send(error.details[0]) ;
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //check for the bartender user with the given email
-  const bartender = await Bartender.findOne({email: req.body.email});
-  if(!bartender) return res.status(400).send({message: 'Password or email incorrect!'});
+  const bartender = await Bartender.findOne({ email: req.body.email });
+  if (!bartender)
+    return res
+      .status(400)
+      .send(setResponse(false, "Password or email incorrect."));
   //check if password match
-  const matchPassword = await bcrypt.compare(req.body.password, bartender.password);
-  if(!matchPassword) return res.status(400).send({message: 'Password or email incorrect!'});
+  const matchPassword = await bcrypt.compare(
+    req.body.password,
+    bartender.password
+  );
+  if (!matchPassword)
+    return res
+      .status(400)
+      .send(setResponse(false, "Password or email incorrect."));
   //generate token and send the response
   const token = bartender.generateToken();
-  res.send({token: token});
+  res.send(setResponse(token));
 });
 
 function validateInput(req) {
@@ -57,7 +88,7 @@ function validateInput(req) {
     password: Joi.string().required(),
   });
   const { error } = Joi.validate(req, schema);
-  return error
-};
+  return error;
+}
 
 module.exports = router;
