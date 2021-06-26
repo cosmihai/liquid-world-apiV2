@@ -7,11 +7,12 @@ const { Customer } = require("../models/customer");
 const { Restaurant } = require("../models/restaurant");
 const express = require("express");
 const router = express.Router();
+const setResponse = require("../helpers/setResponse");
 
 //get all restaurants
 router.get("/", async (req, res) => {
   const restaurants = await Restaurant.find({}, "-password");
-  res.send(restaurants);
+  res.send(setResponse(restaurants));
 });
 
 //get the restaurant profile
@@ -20,8 +21,9 @@ router.get("/me", auth, async (req, res) => {
   const me = await Restaurant.findById(req.user._id, "-password").populate(
     "comments"
   );
-  if (!me) return res.status(400).send(`Invalid token provided`);
-  res.send(me);
+  if (!me)
+    return res.status(400).send(setResponse(false, `Invalid token provided`));
+  res.send(setResponse(me));
 });
 
 //get one restaurant profile
@@ -34,8 +36,8 @@ router.get("/:id", validateId, async (req, res) => {
   if (!restaurant)
     return res
       .status(404)
-      .send({ message: `No restaurant with this id: ${req.params.id}` });
-  res.send(restaurant);
+      .send(setResponse(false, `No restaurant with this id: ${req.params.id}`));
+  res.send(setResponse(restaurant));
 });
 
 //rate one restaurant
@@ -44,16 +46,18 @@ router.put("/:id/rate", auth, validateId, async (req, res) => {
   if (req.user.role !== "customer")
     return res
       .status(401)
-      .send({ message: "Only customer users can rate restaurants" });
+      .send(setResponse(false, "Only customer users can rate restaurants"));
   //get the customer
   const customer = await Customer.findById(req.user._id);
   if (!customer)
-    return res.status(400).send({ message: "No customer found with this id!" });
+    return res
+      .status(400)
+      .send(setResponse(false, "No customer found with this id."));
   //check for the rate object in the body of the request
   if (!req.body.rate || req.body.rate < 1 || req.body.rate > 5) {
     return res
       .status(400)
-      .send({ message: "Rate must be a number between 1 and 5!" });
+      .send(setResponse(false, "Rate must be a number between 1 and 5."));
   }
   //check if the customer already rated this restaurant
   let previousRate;
@@ -110,10 +114,10 @@ router.put("/:id/rate", auth, validateId, async (req, res) => {
       )
       .run()
       .then(() => {
-        res.send({ votes: votes, stars: stars });
+        res.send(setResponse({ votes: votes, stars: stars }));
       });
   } catch (ex) {
-    res.status(500).send("Exception: \n" + ex);
+    res.status(500).send(setResponse(false, "Exception: \n" + ex));
   }
 });
 
@@ -121,16 +125,17 @@ router.put("/:id/rate", auth, validateId, async (req, res) => {
 router.post("/", async (req, res) => {
   //check if password exist in the body of the request
   if (!req.body.password)
-    return res.status(400).send({ message: '"Password" is required!' });
+    return res.status(400).send(setResponse(false, '"Password" is required.'));
   //search for errors in the body of the request
   const error = new Restaurant().validateRestaurant(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   // check if the email is available
   const exist = await Restaurant.findOne({ email: req.body.email });
   if (exist)
     return res
       .status(400)
-      .send({ message: `"${exist.email}" already in use!` });
+      .send(setResponse(false, `"${exist.email}" already in use!`));
   //encrypt password
   const hash = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, hash);
@@ -139,7 +144,7 @@ router.post("/", async (req, res) => {
   let restaurant = new Restaurant(req.body);
   restaurant = await restaurant.save();
   //send response
-  res.send(_.pick(restaurant, ["_id", "name", "email", "role"]));
+  res.send(setResponse(_.pick(restaurant, ["_id", "name", "email", "role"])));
 });
 
 //edit the restaurant profile
@@ -148,24 +153,30 @@ router.put("/me", auth, async (req, res) => {
   const id = req.user._id;
   //search for errors in the body of the request
   const error = new Restaurant().validateRestaurant(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //prevent password to be change
   if (req.body.password)
-    return res.status(400).send({ message: '"Password" is not allowed!' });
+    return res
+      .status(400)
+      .send(setResponse(false, '"Password" is not allowed.'));
   //update the profile
   const me = await Restaurant.findByIdAndUpdate(id, req.body, { new: true });
-  if (!me) return res.status(400).send({ message: `Invalid token provided` });
+  if (!me)
+    return res.status(400).send(setResponse(false, `Invalid token provided`));
   res.send(
-    _.pick(me, [
-      "_id",
-      "name",
-      "email",
-      "address",
-      "phone",
-      "description",
-      "capacity",
-      "cuisine",
-    ])
+    setResponse(
+      _.pick(me, [
+        "_id",
+        "name",
+        "email",
+        "address",
+        "phone",
+        "description",
+        "capacity",
+        "cuisine",
+      ])
+    )
   );
 });
 
@@ -175,18 +186,22 @@ router.put("/me/change-password", auth, async (req, res) => {
   const id = req.user._id;
   //vaidate password
   const error = new Restaurant().validatePassword(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //check for the restaurant with this id
   const me = await Restaurant.findById(id);
-  if (!me) return res.status(400).send(`Invalid token provided`);
+  if (!me)
+    return res.status(400).send(setResponse(false, `Invalid token provided`));
   //prevent establish the same password as before
   if (await bcrypt.compare(req.body.password, me.password))
-    return res.status(400).send({ message: "Can not set the same password" });
+    return res
+      .status(400)
+      .send(setResponse(false, "Can not set the same password"));
   //encrypt and set the new password
   const hash = await bcrypt.genSalt(10);
   me.password = await bcrypt.hash(req.body.password, hash);
   await me.save();
-  res.send({ message: `Password changed for "${me.name}" user.` });
+  res.send(setResponse(`Password changed for "${me.name}" user.`));
 });
 
 //add one photo to the restaurant gallery
@@ -195,14 +210,16 @@ router.put("/me/add-photo", auth, async (req, res) => {
   const id = req.user._id;
   //check the image object
   const error = new Restaurant().validateImage(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //check for the restaurant with this id and push the new image
   const me = await Restaurant.updateOne(
     { _id: id },
     { $push: { images: req.body } }
   );
-  if (!me.n) return res.status(400).send({ message: `Invalid token provided` });
-  res.send(me);
+  if (!me.n)
+    return res.status(400).send(setResponse(false, `Invalid token provided`));
+  res.send(setResponse(me));
 });
 
 //remove one photo from the restaurant gallery
@@ -214,12 +231,13 @@ router.delete("/me/remove-photo/:id", auth, validateId, async (req, res) => {
     { _id: id },
     { $pull: { images: { _id: req.params.id } } }
   );
-  if (!me.n) return res.status(400).send({ message: `Invalid token provided` });
+  if (!me.n)
+    return res.status(400).send(setResponse(false, `Invalid token provided`));
   if (!me.nModified)
     return res
       .status(404)
-      .send({ message: `No image with this id: ${req.params.id}` });
-  res.send(me);
+      .send(setResponse(false, `No image with this id: ${req.params.id}`));
+  res.send(setResponse(me));
 });
 
 //remove the restaurant profile
@@ -228,9 +246,9 @@ router.delete("/me", auth, async (req, res) => {
   const id = req.user._id;
   //remove restaurant user from DB
   const me = await Restaurant.findByIdAndDelete(id);
-  res.send({
-    message: `The "${me.name}" user was successfully removed from DB`,
-  });
+  res.send(
+    setResponse(`The "${me.name}" user was successfully removed from DB`)
+  );
 });
 
 module.exports = router;

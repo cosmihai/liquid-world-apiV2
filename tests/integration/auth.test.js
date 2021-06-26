@@ -25,29 +25,34 @@ describe("/api/auth", () => {
       const res = await exec(url, payload);
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch('"email" is not allowed to be empty');
+      expect(res.body.success).toBe(false);
     });
     it("Should return 400 if password is missing", async () => {
       payload.password = '';
       const res = await exec(url, payload);
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch('"password" is not allowed to be empty');
+      expect(res.body.success).toBe(false);
     });
     it("Should return 400 if email is incorrect", async () => {
       payload.email = 'incorrect@email.com';
       const res = await exec(url, payload);
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch('Password or email incorrect');
+      expect(res.body.success).toBe(false);
     });
     it("Should return 400 if password is incorrect", async () => {
       payload.password = '1234567';
       const res = await exec(url, payload);
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch('Password or email incorrect');
+      expect(res.body.success).toBe(false);
     });
     it("Should return 200 if password and email are correct", async () => {
       const res = await exec(url, payload);
       expect(res.status).toBe(200);
-      expect(res.body.token).not.toBe(null);
+      expect(res.body.message).toMatch(/(\..*){2,}/);
+      expect(res.body.success).toBe(true);
     });
   }
 

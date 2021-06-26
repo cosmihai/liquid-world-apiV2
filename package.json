@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --watchAll --verbose"
+    "test": "jest --watchAll --verbose --runInBand --detectOpenHandles --forceExit"
   },
   "engines": {
     "node": "12.*.*"

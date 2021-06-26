@@ -5,11 +5,12 @@ const { Cocktail } = require("../models/cocktail");
 const { Like } = require("../models/like");
 const express = require("express");
 const router = express.Router();
+const setResponse = require("../helpers/setResponse");
 
 //list all likes
 router.get("/", async (req, res) => {
   const likes = await Like.find();
-  res.send(likes);
+  res.send(setResponse(likes));
 });
 
 //give like to a cocktail
@@ -18,20 +19,25 @@ router.post("/", auth, async (req, res) => {
   if (req.user.role != "customer")
     return res
       .status(401)
-      .send({ message: `Only customers can give like to a cocktail` });
+      .send(setResponse(false, `Only customers can give like to a cocktail`));
   //set the customer
   const customer = await Customer.findById(req.user._id);
   if (!customer)
-    return res.status(400).send({ message: `No customer user with this id` });
+    return res
+      .status(400)
+      .send(setResponse(false, `No customer user with this id`));
   //validate the body of the request
   const error = new Like().validateLike(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   const cocktail = await Cocktail.findById(req.body.cocktailId);
   if (!cocktail)
-    return res.status(404).send({ message: `No cocktail with this id` });
+    return res.status(404).send(setResponse(false, `No cocktail with this id`));
   //check if already is in favCocktail list
   if (customer.favCocktails.indexOf(cocktail._id) > -1)
-    return res.status(400).send({ message: `You already like this cocktail` });
+    return res
+      .status(400)
+      .send(setResponse(false, `You already like this cocktail`));
   //set the like
   const like = new Like({
     customerId: customer._id,
@@ -71,10 +77,10 @@ router.post("/", auth, async (req, res) => {
       )
       .run()
       .then(() => {
-        res.send(like);
+        res.send(setResponse(like));
       });
   } catch (ex) {
-    res.status(500).send("Exception: \n" + ex);
+    res.status(500).send(setResponse(false, "Exception: \n" + ex));
   }
 });
 
@@ -84,23 +90,26 @@ router.delete("/", auth, async (req, res) => {
   if (req.user.role != "customer")
     return res
       .status(401)
-      .send({ message: `Only customers can access this resource` });
+      .send(setResponse(false, `Only customers can access this resource`));
   //set the customer
   const customer = await Customer.findById(req.user._id);
   if (!customer)
-    return res.status(404).send({ message: `No customer user with this id` });
+    return res
+      .status(404)
+      .send(setResponse(false, `No customer user with this id`));
   //validate the body of the request
   const error = new Like().validateLike(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error)
+    return res.status(400).send(setResponse(false, error.details[0].message));
   //get the cocktail
   const cocktail = await Cocktail.findById(req.body.cocktailId);
   if (!cocktail)
-    return res.status(404).send({ message: `No cocktail with this id` });
+    return res.status(404).send(setResponse(false, `No cocktail with this id`));
   //search for this cocktail in favorites list
   if (customer.favCocktails.indexOf(cocktail._id) < 0)
     return res
       .status(400)
-      .send({ message: `This cocktail is not in your favorite list` });
+      .send(setResponse(false, `This cocktail is not in your favorite list`));
   const like = await Like.findOne({
     $and: [{ customerId: customer._id }, { cocktailId: cocktail._id }],
   });
@@ -131,12 +140,14 @@ router.delete("/", auth, async (req, res) => {
       )
       .run()
       .then(() => {
-        res.send({
-          message: `Cocktail ${cocktail.name} is no longer in your favorite list`,
-        });
+        res.send(
+          setResponse(
+            `Cocktail ${cocktail.name} is no longer in your favorite list`
+          )
+        );
       });
   } catch (ex) {
-    res.status(500).send("Exception: \n" + ex);
+    res.status(500).send(setResponse(false, "Exception: \n" + ex));
   }
 });
 

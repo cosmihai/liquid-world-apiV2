@@ -6,11 +6,12 @@ const { Customer } = require("../models/customer");
 const { Comment } = require("../models/comment");
 const express = require("express");
 const router = express.Router();
+const setResponse = require("../helpers/setResponse");
 
 //list all comments
 router.get("/", async (req, res) => {
   const comments = await Comment.find();
-  res.send(comments);
+  res.send(setResponse(comments));
 });
 
 //list one comments
@@ -19,29 +20,29 @@ router.get("/:id", validateId, async (req, res) => {
   if (!comment)
     return res
       .status(404)
-      .send({ message: `No comment with this id ${req.params.id}` });
-  res.send(comment);
+      .send(setResponse(false, `No comment with this id ${req.params.id}`));
+  res.send(setResponse(comment));
 });
 
 //create comment
 router.post("/", auth, async (req, res) => {
   //authorize
   if (req.user.role != "customer")
-    return res.status(401).send({ message: `Only customers can add comments` });
+    return res.status(401).send(setResponse(false, `Only customers can add comments`));
   //set the customer id
   req.body.customerId = req.user._id;
   //validate the body of the request
   const error = new Comment().validateComment(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error) return res.status(400).send(setResponse(false, error.details[0].message));
   //check if restaurant or customer with the specified id
   const restaurant = await Restaurant.findById(req.body.restaurantId);
   if (!restaurant)
     return res
       .status(404)
-      .send({ message: "No restaurant found with this id!" });
+      .send(setResponse(false, "No restaurant found with this id!"));
   const customer = await Customer.findById(req.body.customerId);
   if (!customer)
-    return res.status(404).send({ message: "No customer found with this id!" });
+    return res.status(404).send(setResponse(false, "No customer found with this id!"));
   //create the new comment and save it
   const comment = new Comment({
     text: req.body.text,
@@ -77,10 +78,10 @@ router.post("/", auth, async (req, res) => {
       )
       .run()
       .then(() => {
-        res.send(comment);
+        res.send(setResponse(comment));
       });
   } catch (ex) {
-    res.status(500).send("Exception: \n" + ex);
+    res.status(500).send(setResponse(false, "Exception: \n" + ex));
   }
 });
 
@@ -89,22 +90,22 @@ router.put("/:id", auth, validateId, async (req, res) => {
   //get the comment
   let comment = await Comment.findById(req.params.id);
   if (!comment)
-    return res.status(404).send({ message: "No comment with this id" });
+    return res.status(404).send(setResponse(false, "No comment with this id"));
   //check the owner and authorize the change
   if (req.user._id != comment.author._id)
     return res
       .status(401)
-      .send({ message: "You are not authorized to modify this comment" });
+      .send(setResponse(false, "You are not authorized to modify this comment"));
   //set the customer and restaurant id
   req.body.customerId = comment.author._id.toString();
   req.body.restaurantId = comment.recipient._id.toString();
   //validate the body of the request
   const error = new Comment().validateComment(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error) return res.status(400).send(setResponse(false, error.details[0].message));
   //update the comment
   comment.text = req.body.text;
   await comment.save();
-  res.send(comment);
+  res.send(setResponse(comment));
 });
 
 //delete comment
@@ -114,12 +115,12 @@ router.delete("/:id", auth, validateId, async (req, res) => {
   if (!comment)
     return res
       .status(404)
-      .send({ message: `No comment with this id ${req.params.id}` });
+      .send(setResponse(false, `No comment with this id ${req.params.id}`));
   //check the owner and authorize the remove
   if (req.user._id != comment.author._id)
     return res
       .status(401)
-      .send({ message: "You are not authorized to delete this comment" });
+      .send(setResponse(false, "You are not authorized to delete this comment"));
   // remove the comment from the DB and from the restaurant's list of comments
   try {
     new Fawn.Task()
@@ -140,10 +141,10 @@ router.delete("/:id", auth, validateId, async (req, res) => {
       )
       .run()
       .then(() => {
-        res.send({ message: "Successfully deleted", deleted: comment });
+        res.send(setResponse("Successfully deleted", {deleted: comment}));
       });
   } catch (ex) {
-    res.status(500).send("Exception: \n" + ex);
+    res.status(500).send(setResponse(false, "Exception: \n" + ex));
   }
 });
 

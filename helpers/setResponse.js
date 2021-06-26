@@ -1,9 +1,9 @@
-function response(...arguments) {
+function response(...argumentsList) {
 	let success = true;
 	let message = "Data retrieved successfully";
 	let data = null;
-  if (arguments.length) {
-    arguments.forEach((arg, index) => {
+  if (argumentsList.length) {
+    argumentsList.forEach((arg) => {
       switch (typeof arg) {
         case "boolean":
           success = arg;
