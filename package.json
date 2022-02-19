@@ -10,7 +10,7 @@
     "test": "jest --watchAll --verbose --runInBand --detectOpenHandles --forceExit"
   },
   "engines": {
-    "node": "12.*.*"
+    "node": "16.*.*"
   },
   "author": "Mihai Costantea",
   "license": "ISC",
