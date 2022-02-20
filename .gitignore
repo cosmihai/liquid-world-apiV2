@@ -1,4 +1,4 @@
 /node_modules
 todo.txt
-logfile.log
-uncaughtExceptions.log
+info.log
+exceptions.log

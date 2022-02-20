@@ -1,5 +1,5 @@
 const config = require('config');
-const winston = require('winston');
+const logger = require("../startup/logger");
 const mongoose = require('mongoose');
 const Fawn = require('fawn');
 Fawn.init(mongoose);
@@ -12,6 +12,6 @@ module.exports = function () {
     useCreateIndex: true,
     useFindAndModify: false
   })
-    .then(() => winston.info(`connected to ${db} ...`))
+    .then(() => logger.info(`connected to ${db} ...`))
     .catch(err => {throw new Error('DB ERROR: ' + err.message)})
 } 
