@@ -255,6 +255,13 @@ __api/likes__
 - _get_ / => list all likes
 - _post_ / => give a like
 - _delete_ / => remove a like
+  
+  
+  
+ 
+  
+  
+  
 
 
 
